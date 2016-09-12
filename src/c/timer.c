@@ -1,6 +1,7 @@
 #include <pebble.h>
 #include "timer.h"
 #include "timers.h"
+#include "settings.h"
 
 static void timer_tick(void* context);
 static void timer_finish(Timer* timer);
@@ -35,21 +36,21 @@ void timer_start(Timer* timer) {
 	timer->status = TIMER_STATUS_RUNNING;
 	timer_schedule_tick(timer);
 	timer_schedule_wakeup(timer, 0);
-	//timers_mark_updated();
+	timers_mark_updated();
 }
 
 void timer_pause(Timer* timer) {
 	timer->status = TIMER_STATUS_PAUSED;
 	timer_cancel_tick(timer);
 	timer_cancel_wakeup(timer);
-	//timers_mark_updated();
+	timers_mark_updated();
 }
 
 void timer_resume(Timer* timer) {
 	timer->status = TIMER_STATUS_RUNNING;
 	timer_schedule_tick(timer);
 	timer_schedule_wakeup(timer, 0);
-	//timers_mark_updated();
+	timers_mark_updated();
 }
 
 void timer_reset(Timer* timer) {
@@ -63,7 +64,7 @@ void timer_reset(Timer* timer) {
 			break;
 	}
 	timer->status = TIMER_STATUS_STOPPED;
-	//timers_mark_updated();
+	timers_mark_updated();
 }
 
 void timer_restore(Timer* timer, uint16_t seconds_elapsed) {
@@ -117,8 +118,8 @@ char* timer_vibe_str(TimerVibration vibe, bool shortStr) {
 Timer* timer_create_timer(void) {
 	Timer* timer = malloc(sizeof(Timer));
 	timer->type = TIMER_TYPE_TIMER;
-	//timer->vibration = settings()->timers_vibration;
-	//timer->length = settings()->timers_duration;
+	timer->vibration = settings()->timers_vibration;
+	timer->length = settings()->timers_duration;
 	timer->wakeup_id = -1;
 	timer->timer = NULL;
 	timer->repeat = 0;
@@ -155,7 +156,7 @@ static void	timer_tick(void* context) {
 	if (timer->status == TIMER_STATUS_RUNNING) {
 		timer_schedule_tick(timer);
 	}
-	//timers_mark_updated();
+	timers_mark_updated();
 }
 
 static void timer_finish(Timer* timer) {

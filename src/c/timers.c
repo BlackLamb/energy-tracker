@@ -2,6 +2,7 @@
 #include <@smallstoneapps/linked-list/linked-list.h>
 #include "timers.h"
 #include "timer.h"
+#include "persist.h"
 
 typedef struct {
     Timer timers[TIMER_BLOCK_SIZE];
@@ -141,10 +142,68 @@ static void timers_cleanup(void) {
 }
 
 void timers_save(void) {
+    if (timers_count() == 0) {
+        persist_delete(PERSIST_TIMER_START);
+        return;
+    }
+    TimerBlock* block = NULL;
+    uint8_t block_count = 0;
+    for (uint8_t b = 0; b < timers_count(); b += 1) {
+        if (NULL == block) {
+            block = malloc(sizeof(TimerBlock));
+            block->total_timers = timers_count();
+            block->save_time = time(NULL);
+        }
 
+        uint8_t timer_block_pos = b % TIMER_BLOCK_SIZE;
+        block->timers[timer_block_pos] = *timers_get(b);
+
+        bool is_last_timer_in_block = timer_block_pos == (TIMER_BLOCK_SIZE - 1);
+        if (is_last_timer_in_block) {
+            persist_write_data(PERSIST_TIMER_START + block_count, block, sizeof(TimerBlock));
+            block_count += 1;
+            free(block);
+            block = NULL;
+        }
+    }
+    if (block) {
+        persist_write_data(PERSIST_TIMER_START + block_count, block, sizeof(TimerBlock));
+    }
+    persist_write_int(PERSIST_TIMERS_VERSION, TIMERS_VERSION_CURRENT);
 }
 
 void timers_restore(void) {
+    timers_clear();
 
+    time_t now = time(NULL);
+    uint16_t seconds_elapsed = 0;
+
+    TimerBlock* block = NULL;
+    if (persist_exists(PERSIST_TIMER_START)) {
+        block = malloc(sizeof(TimerBlock));
+        persist_read_data(PERSIST_TIMER_START, block, sizeof(TimerBlock));
+        uint8_t num_timers = block->total_timers;
+        uint8_t block_offset = 0;
+        seconds_elapsed = now - block->save_time;
+
+        for (uint8_t t = 0; t < num_timers; t += 1) {
+            if (! block) {
+                block = malloc(sizeof(TimerBlock));
+                persist_read_data(PERSIST_TIMER_START + block_offset, block, sizeof(TimerBlock));
+            }
+            Timer* timer = timer_clone(&block->timers[t % TIMER_BLOCK_SIZE]);
+            timers_add(timer);
+            timer_restore(timer, seconds_elapsed);
+            if ( t % TIMER_BLOCK_SIZE == (TIMER_BLOCK_SIZE - 1)) {
+                free(block);
+                block = NULL;
+                block_offset += 1;
+            }
+        }
+        if (block) {
+            free(block);
+            block = NULL;
+        }
+    }
 }
 

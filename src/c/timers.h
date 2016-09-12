@@ -4,7 +4,6 @@
 #define TIMER_BLOCK_SIZE 4
 
 #define TIMERS_VERSION_CURRENT 1
-#define TIMERS_VERSION_TINY 1
 
 typedef void (*TimersUpdatedHandler)(void);
 typedef void (*TimerHighlightHandler)(Timer* timer);

@@ -2,6 +2,7 @@
   "author": "Fathom Game",
   "dependencies": {
     "@smallstoneapps/linked-list": "^1.3.0",
+    "@smallstoneapps/utils": "^1.2.1",
     "enamel": "^1.2.1",
     "pebble-clay": "^1.0.0"
   },
