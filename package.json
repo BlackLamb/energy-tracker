@@ -1,58 +1,59 @@
 {
-  "author": "Fathom Game",
-  "dependencies": {
-    "@smallstoneapps/linked-list": "^1.3.0",
-    "@smallstoneapps/utils": "^1.2.1",
-    "enamel": "^1.2.1",
-    "pebble-clay": "^1.0.0"
-  },
-  "keywords": [],
-  "name": "energy-counter",
-  "pebble": {
-    "capabilities": [
-      "configurable"
-    ],
-    "displayName": "Energy Counter",
-    "enableMultiJS": true,
-    "messageKeys": [
-      "StrMaxEnergy",
-      "BoolReset",
-      "Counter1BoolEnabled",
-      "Counter1StrName",
-      "Counter1IntTick",
-      "Counter1BoolAccel",
-      "Counter1IntAccelTick",
-      "Counter2BoolEnabled",
-      "Counter2StrName",
-      "Counter2IntTick",
-      "Counter2BoolAccel",
-      "Counter2IntAccelTick",
-      "Counter3BoolEnabled",
-      "Counter3StrName",
-      "Counter3IntTick",
-      "Counter3BoolAccel",
-      "Counter3IntAccelTick",
-      "Counter4BoolEnabled",
-      "Counter4StrName",
-      "Counter4IntTick",
-      "Counter4BoolAccel",
-      "Counter4IntAccelTick"
-    ],
-    "projectType": "native",
-    "resources": {
-      "media": []
+    "author": "Fathom Game",
+    "dependencies": {
+        "@smallstoneapps/bitmap-loader": "^1.2.3",
+        "@smallstoneapps/linked-list": "^1.3.0",
+        "@smallstoneapps/utils": "^1.2.1",
+        "enamel": "^1.2.1",
+        "pebble-clay": "^1.0.0"
     },
-    "sdkVersion": "3",
-    "targetPlatforms": [
-      "aplite",
-      "basalt",
-      "chalk",
-      "diorite"
-    ],
-    "uuid": "7bd8157e-1026-4eaa-a55e-456c22231ddf",
-    "watchapp": {
-      "watchface": false
-    }
-  },
-  "version": "1.0.0"
+    "keywords": [],
+    "name": "energy-counter",
+    "pebble": {
+        "capabilities": [
+            "configurable"
+        ],
+        "displayName": "Energy Counter",
+        "enableMultiJS": true,
+        "messageKeys": [
+            "StrMaxEnergy",
+            "BoolReset",
+            "Counter1BoolEnabled",
+            "Counter1StrName",
+            "Counter1IntTick",
+            "Counter1BoolAccel",
+            "Counter1IntAccelTick",
+            "Counter2BoolEnabled",
+            "Counter2StrName",
+            "Counter2IntTick",
+            "Counter2BoolAccel",
+            "Counter2IntAccelTick",
+            "Counter3BoolEnabled",
+            "Counter3StrName",
+            "Counter3IntTick",
+            "Counter3BoolAccel",
+            "Counter3IntAccelTick",
+            "Counter4BoolEnabled",
+            "Counter4StrName",
+            "Counter4IntTick",
+            "Counter4BoolAccel",
+            "Counter4IntAccelTick"
+        ],
+        "projectType": "native",
+        "resources": {
+            "media": []
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "aplite",
+            "basalt",
+            "chalk",
+            "diorite"
+        ],
+        "uuid": "7bd8157e-1026-4eaa-a55e-456c22231ddf",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
 }

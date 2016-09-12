@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include <@smallstoneapps/utils/macros.h>
+#include <@smallstoneapps/bitmap-loader/bitmap-loader.h>
 #include "timer.h"
 #include "settings.h"
 
@@ -14,7 +15,7 @@ void menu_draw_row_icon_text(GContext* ctx, char* text, GBitmap* icon) {
         GTextAlignmentLeft, NULL);
 }
 
-void¬timer_draw_text(Timer* timer, GContext* ctx) {
+void timer_draw_text(Timer* timer, GContext* ctx) {
     char* time_left = malloc(12);
     timer_time_str(timer->current_time, settings()->timers_hours, time_left, 12);
 
