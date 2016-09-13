@@ -9,9 +9,9 @@
 Settings _settings = {
     .timers_start_auto = false,
     .timers_vibration = TIMER_VIBE_SHORT,
-    .timers_duration = 10 * 60,
+    .timers_duration = 5 * 60,
     .timers_hours = false,
-    .show_clock = false
+    .show_clock = true
 };
 
 void settings_load(void) {
