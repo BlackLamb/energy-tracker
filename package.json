@@ -15,6 +15,12 @@
         "resources": {
             "media": [
                 {
+                    "file": "images/status.png",
+                    "name": "IMAGE_BOTTOM_STATUS",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
                     "file": "images/icons.png",
                     "name": "ICONS_16",
                     "targetPlatforms": null,

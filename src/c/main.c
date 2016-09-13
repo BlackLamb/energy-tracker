@@ -1,6 +1,6 @@
 #include <pebble.h>
 #include <@smallstoneapps/bitmap-loader/bitmap-loader.h>
-#include "windows/win-main.h"
+#include "src/c/main_screen.h"
 #include "timers.h"
 #include "settings.h"
 #include "persist.h"
@@ -21,8 +21,8 @@ static void init(void) {
   settings_load();
   timers_restore();
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
-  win_main_init();
-  win_main_show();
+  main_screen_init();
+  main_screen_show();
 }
 
 static void deinit(void) {
