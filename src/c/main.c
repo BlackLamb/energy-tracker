@@ -20,9 +20,10 @@ static void init(void) {
   bitmaps_init();
   settings_load();
   timers_restore();
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
   main_screen_init();
   main_screen_show();
+  main_screen_show_status_area();
+  main_screen_hide_status_area();
 }
 
 static void deinit(void) {
