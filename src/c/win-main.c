@@ -105,12 +105,7 @@ static int16_t menu_cell_height(struct MenuLayer* menu, MenuIndex* cell_index, v
 			if (! timer) {
 				return 32;
 			}
-			switch (timer->type) {
-				case TIMER_TYPE_TIMER:
-					return 34;
-				case TIMER_TYPE_STOPWATCH:
-					return 32;
-			}
+			return 34;
 			break;
 		}
 	}

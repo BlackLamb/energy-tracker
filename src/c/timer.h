@@ -3,17 +3,11 @@
 #include <pebble.h>
 
 typedef enum {
-	TIMER_TYPE_TIMER = 0,
-	TIMER_TYPE_STOPWATCH = 1,
-} TimerType;
-
-typedef enum {
 	TIMER_VIBE_NONE = 0,
 	TIMER_VIBE_SHORT = 1,
 	TIMER_VIBE_LONG = 2,
 	TIMER_VIBE_DOUBLE = 3,
 	TIMER_VIBE_TRIPLE = 4,
-	TIMER_VIBE_SOLID = 5,
 } TimerVibration;
 
 typedef enum {
@@ -25,19 +19,16 @@ typedef enum {
 
 typedef struct Timer {
 	uint16_t id;
-	TimerType type;
 	uint32_t length;
 	uint32_t current_time;
 	TimerStatus status;
-	TimerVibration vibration;
-	uint8_t repeat;
-	uint8_t repeat_count;
 	AppTimer* timer;
 	WakeupId wakeup_id;
-	char label[24];
+	bool accel;
+	uint8_t accel_tick;
+	uint8_t base_tick;
+	uint8_t current_tick;
 } Timer;
-
-#define TIMER_REPEAT_INDINITE 100
 
 void timer_time_str(uint32_t timer_time, bool showHours, char* str, int str_len);
 void timer_start(Timer* timer);

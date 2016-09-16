@@ -22,8 +22,8 @@ static BitmapLayer *s_bitmap_status_area_layer;
 static TextLayer *s_timer_rate_layer;
 static TextLayer *s_timer_next_layer;
 static TextLayer *s_timer_full_layer;
-static char* s_str_current_eng = "99";
-static char* s_str_max_eng = "/99";
+static char s_str_current_eng[] = "99";
+static char s_str_max_eng[] = "/99";
 
 static void initialise_ui(void);
 static void destroy_ui(void);
@@ -31,7 +31,7 @@ static void handle_window_unload(Window* window);
 static void anim_stopped_handler(Animation *animation, bool finished, void *context);
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed);
 static void timers_update_handler(void);
-static void update_energy(uint8_t amount);
+static void update_energy(int8_t amount);
 static void layer_action_bar_click_config_provider(void *context);
 static void action_bar_layer_down_handler(ClickRecognizerRef recognizer, void *context);
 static void action_bar_layer_up_handler(ClickRecognizerRef recognizer, void *context);
@@ -88,7 +88,7 @@ static void initialise_ui(void) {
   uint16_t status_width = STATUS_BOX_WIDTH;
   uint16_t status_height = STATUS_BOX_HEIGHT;
 	snprintf(s_str_max_eng, sizeof(s_str_max_eng), "/%i", settings()->max_energy);
-	//snprintf(s_str_current_eng, sizeof(s_str_current_eng), "%i", settings()->current_energy);
+	snprintf(s_str_current_eng, sizeof(s_str_current_eng), "%i", settings()->current_energy);
 
   // s_bitmap_status_area_layer
   s_bitmap_status_area_layer = bitmap_layer_create(GRect(PBL_IF_RECT_ELSE(-1, -3), PEBBLE_HEIGHT, status_width, status_height));
@@ -188,7 +188,7 @@ static void timers_update_handler(void) {
 	
 }
 
-static void update_energy(uint8_t amount) {
+static void update_energy(int8_t amount) {
 	settings()->current_energy += amount;
 	if (settings()->current_energy > settings()->max_energy) {
 		settings()->current_energy = settings()->max_energy;
@@ -196,10 +196,10 @@ static void update_energy(uint8_t amount) {
 	if (settings()->current_energy < 0) {
 		settings()->current_energy = 0;
 	}
-	//snprintf(s_str_max_eng, sizeof(s_str_max_eng), "/%i", settings()->max_energy);
+	snprintf(s_str_max_eng, sizeof(s_str_max_eng), "/%i", settings()->max_energy);
 	snprintf(s_str_current_eng, sizeof(s_str_current_eng), "%i", settings()->current_energy);
 	text_layer_set_text(s_current_energy_layer, s_str_current_eng);
-	//text_layer_set_text(s_total_energy_layer, s_str_max_eng);
+	text_layer_set_text(s_total_energy_layer, s_str_max_eng);
 }
 
 static void layer_action_bar_click_config_provider(void *context) {

@@ -25,14 +25,7 @@ void timer_time_str(uint32_t timer_time, bool showHours, char* str, int str_len)
 }
 
 void timer_start(Timer* timer) {
-	switch (timer->type) {
-		case TIMER_TYPE_TIMER:
-			timer->current_time = timer->length;
-			break;
-		case TIMER_TYPE_STOPWATCH:
-			timer->current_time = 0;
-			break;
-	}
+	timer->current_time = timer->length;
 	timer->status = TIMER_STATUS_RUNNING;
 	timer_schedule_tick(timer);
 	timer_schedule_wakeup(timer, 0);
@@ -55,14 +48,7 @@ void timer_resume(Timer* timer) {
 
 void timer_reset(Timer* timer) {
 	timer_pause(timer);
-	switch (timer->type) {
-		case TIMER_TYPE_TIMER:
-			timer->current_time = timer->length;
-			break;
-		case TIMER_TYPE_STOPWATCH:
-			timer->current_time = 0;
-			break;
-	}
+	timer->current_time = timer->length;
 	timer->status = TIMER_STATUS_STOPPED;
 	timers_mark_updated();
 }
@@ -70,20 +56,12 @@ void timer_reset(Timer* timer) {
 void timer_restore(Timer* timer, uint16_t seconds_elapsed) {
 	timer->timer = NULL;
 	if (timer->status == TIMER_STATUS_RUNNING) {
-		switch (timer->type) {
-			case TIMER_TYPE_STOPWATCH:
-				timer->current_time += seconds_elapsed;
-				break;
-			case TIMER_TYPE_TIMER: {
-				if (seconds_elapsed >= timer->current_time) {
-					timer->current_time = 0;
-					timer->status = TIMER_STATUS_DONE;
-				}
-				else {
-					timer->current_time -= seconds_elapsed;
-				}
-				break;
-			}
+		if (seconds_elapsed >= timer->current_time) {
+			timer->current_time = 0;
+			timer->status = TIMER_STATUS_DONE;
+		}
+		else {
+			timer->current_time -= seconds_elapsed;
 		}
 	}
 	if (timer->status == TIMER_STATUS_RUNNING) {
@@ -109,49 +87,30 @@ char* timer_vibe_str(TimerVibration vibe, bool shortStr) {
 			return shortStr ? "Double" : "Double Pulse";
 		case TIMER_VIBE_TRIPLE:
 			return shortStr ? "Triple" : "Triple Pulse";
-		case TIMER_VIBE_SOLID:
-			return shortStr ? "Solid" : "Continous";
 	}
 	return "";
 }
 
 Timer* timer_create_timer(void) {
 	Timer* timer = malloc(sizeof(Timer));
-	timer->type = TIMER_TYPE_TIMER;
-	timer->vibration = settings()->timers_vibration;
 	timer->length = settings()->timers_duration;
 	timer->wakeup_id = -1;
 	timer->timer = NULL;
-	timer->repeat = 0;
-	timer->label[0] = 0;
 	timer->status = TIMER_STATUS_STOPPED;
+	timer->accel = settings()->accel_enabled;
+	timer->accel_tick = settings()->accel_tick;
+	timer->base_tick = 1;
+	timer->current_tick = 3;
 	timer_set_id(timer);
 	return timer;
-}
-
-Timer* timer_create_stopwatch(void) {
-	Timer* stopwatch = malloc(sizeof(Timer));
-	stopwatch->type = TIMER_TYPE_STOPWATCH;
-	stopwatch->length = stopwatch->current_time = 0;
-	stopwatch->label[0] = 0;
-	stopwatch->status = TIMER_STATUS_STOPPED;
-	timer_set_id(stopwatch);
-	return stopwatch;
 }
 
 static void	timer_tick(void* context) {
 	Timer* timer = (Timer*)context;
 	timer->timer = NULL;
-	switch (timer->type) {
-		case TIMER_TYPE_STOPWATCH:
-			timer->current_time += 1;
-			break;
-		case TIMER_TYPE_TIMER:
-			timer->current_time -= 1;
-			if (timer->current_time <= 0) {
-				timer_finish(timer);
-			}
-			break;
+	timer->current_time -= 1;
+	if (timer->current_time <= 0) {
+		timer_finish(timer);
 	}
 	if (timer->status == TIMER_STATUS_RUNNING) {
 		timer_schedule_tick(timer);
@@ -181,9 +140,6 @@ static void timer_cancel_tick(Timer* timer) {
 
 static void timer_schedule_wakeup(Timer* timer, uint16_t offset) {
 	if (! timer) {
-		return;
-	}
-	if (timer->type == TIMER_TYPE_STOPWATCH) {
 		return;
 	}
 	timer_cancel_wakeup(timer);
@@ -245,7 +201,8 @@ static void timer_set_id(Timer* timer) {
 }
 
 static void timer_completed_action(Timer* timer) {
-	switch (timer->vibration) {
+	//TODO: Add energy refill logic
+	switch (settings()->timers_vibration) {
 		case TIMER_VIBE_NONE:
 			break;
 		case TIMER_VIBE_SHORT:
@@ -272,14 +229,10 @@ static void timer_completed_action(Timer* timer) {
 			vibes_enqueue_custom_pattern(pattern);
 			break;
 		}
-		case TIMER_VIBE_SOLID:
-			//win_vibrate_show();
-			break;
 		default:
 			break;
 	}
-	if (timer->repeat == TIMER_REPEAT_INDINITE) {
-		timer_start(timer);
-	}
+	//TODO: Add checking to see if your full and end timer
+	timer_start(timer);
 	timers_highlight(timer);
 }
