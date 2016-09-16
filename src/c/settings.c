@@ -7,6 +7,11 @@
 #include "persist.h"
 
 Settings _settings = {
+		.current_energy = 10,
+		.max_energy = 10,
+		.quicken_enabled = false,
+		.accel_enabled = true,
+		.accel_tick = 3,
     .timers_start_auto = false,
     .timers_vibration = TIMER_VIBE_SHORT,
     .timers_duration = 5 * 60,

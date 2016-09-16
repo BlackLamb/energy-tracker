@@ -14,17 +14,16 @@
 
 static Window *s_window;
 static GFont s_res_gothic_18_bold;
-static GFont s_res_gothic_28_bold;
-static GFont s_res_bitham_42_medium_numbers;
-static GFont s_res_bitham_30_black;
 static ActionBarLayer *s_actionbarlayer;
-static TextLayer *s_timelayer;
+static StatusBarLayer *s_statusbarlayer;
 static TextLayer *s_current_energy_layer;
 static TextLayer *s_total_energy_layer;
 static BitmapLayer *s_bitmap_status_area_layer;
 static TextLayer *s_timer_rate_layer;
 static TextLayer *s_timer_next_layer;
 static TextLayer *s_timer_full_layer;
+static char* s_str_current_eng = "99";
+static char* s_str_max_eng = "/99";
 
 static void initialise_ui(void);
 static void destroy_ui(void);
@@ -32,6 +31,11 @@ static void handle_window_unload(Window* window);
 static void anim_stopped_handler(Animation *animation, bool finished, void *context);
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed);
 static void timers_update_handler(void);
+static void update_energy(uint8_t amount);
+static void layer_action_bar_click_config_provider(void *context);
+static void action_bar_layer_down_handler(ClickRecognizerRef recognizer, void *context);
+static void action_bar_layer_up_handler(ClickRecognizerRef recognizer, void *context);
+static void action_bar_layer_select_handler(ClickRecognizerRef recognizer, void *context);
 
 void main_screen_init(void) {
 	initialise_ui();
@@ -80,15 +84,11 @@ static void initialise_ui(void) {
   s_window = window_create();
   window_set_background_color(s_window, GColorBlack);
   s_res_gothic_18_bold = fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD);
-  s_res_gothic_28_bold = fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD);
-  s_res_bitham_42_medium_numbers = fonts_get_system_font(FONT_KEY_BITHAM_42_MEDIUM_NUMBERS);
-  s_res_bitham_30_black = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
   uint16_t status_start = STATUS_START_HEIGHT;
   uint16_t status_width = STATUS_BOX_WIDTH;
   uint16_t status_height = STATUS_BOX_HEIGHT;
-  char time_str[10];
-  clock_copy_time_string(time_str, 10);
-	
+	snprintf(s_str_max_eng, sizeof(s_str_max_eng), "/%i", settings()->max_energy);
+	//snprintf(s_str_current_eng, sizeof(s_str_current_eng), "%i", settings()->current_energy);
 
   // s_bitmap_status_area_layer
   s_bitmap_status_area_layer = bitmap_layer_create(GRect(PBL_IF_RECT_ELSE(-1, -3), PEBBLE_HEIGHT, status_width, status_height));
@@ -99,35 +99,33 @@ static void initialise_ui(void) {
   s_actionbarlayer = action_bar_layer_create();
   action_bar_layer_add_to_window(s_actionbarlayer, s_window);
   action_bar_layer_set_background_color(s_actionbarlayer, GColorWhite);
-  action_bar_layer_set_icon(s_actionbarlayer, BUTTON_ID_UP, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ADD));
-  action_bar_layer_set_icon(s_actionbarlayer, BUTTON_ID_SELECT, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_SETTINGS));
-  action_bar_layer_set_icon(s_actionbarlayer, BUTTON_ID_DOWN, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_DELETE));
+	action_bar_layer_set_click_config_provider(s_actionbarlayer, layer_action_bar_click_config_provider);
+  action_bar_layer_set_icon(s_actionbarlayer, BUTTON_ID_UP, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ACTION_INC));
+  action_bar_layer_set_icon(s_actionbarlayer, BUTTON_ID_SELECT, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ACTION_TICK));
+  action_bar_layer_set_icon(s_actionbarlayer, BUTTON_ID_DOWN, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ACTION_DEC));
   layer_add_child(window_get_root_layer(s_window), (Layer *)s_actionbarlayer);
-  
-  // s_timelayer
-  s_timelayer = text_layer_create(GRect(0, 3, PEBBLE_WIDTH, 30));
-  text_layer_set_background_color(s_timelayer, GColorClear);
-  text_layer_set_text_color(s_timelayer, GColorWhite);
-  text_layer_set_text(s_timelayer, time_str);
-  text_layer_set_text_alignment(s_timelayer, GTextAlignmentCenter);
-  text_layer_set_font(s_timelayer, s_res_gothic_28_bold);
-  layer_add_child(window_get_root_layer(s_window), (Layer *)s_timelayer);
+	
+  // s_statusbarlayer
+  s_statusbarlayer = status_bar_layer_create();
+  status_bar_layer_set_colors(s_statusbarlayer, GColorClear, GColorWhite);
+  status_bar_layer_set_separator_mode(s_statusbarlayer, StatusBarLayerSeparatorModeNone);
+  layer_add_child(window_get_root_layer(s_window), (Layer *)s_statusbarlayer);
   
   // s_current_energy_layer
   s_current_energy_layer = text_layer_create(GRect(0, 44, (PEBBLE_WIDTH / 2) - 14, 48));
   text_layer_set_background_color(s_current_energy_layer, GColorClear);
   text_layer_set_text_color(s_current_energy_layer, GColorWhite);
-  text_layer_set_text(s_current_energy_layer, "99");
+  text_layer_set_text(s_current_energy_layer, s_str_current_eng);
   text_layer_set_text_alignment(s_current_energy_layer, GTextAlignmentRight);
-  text_layer_set_font(s_current_energy_layer, s_res_bitham_42_medium_numbers);
+  text_layer_set_font(s_current_energy_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_MEDIUM_NUMBERS));
   layer_add_child(window_get_root_layer(s_window), (Layer *)s_current_energy_layer);
   
   // s_total_energy_layer
   s_total_energy_layer = text_layer_create(GRect((PEBBLE_WIDTH / 2) - 18, 64, (PEBBLE_WIDTH / 2) - 15, 34));
   text_layer_set_background_color(s_total_energy_layer, GColorClear);
   text_layer_set_text_color(s_total_energy_layer, GColorWhite);
-  text_layer_set_text(s_total_energy_layer, "/99");
-  text_layer_set_font(s_total_energy_layer, s_res_bitham_30_black);
+  text_layer_set_text(s_total_energy_layer, s_str_max_eng);
+  text_layer_set_font(s_total_energy_layer, fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK));
   layer_add_child(window_get_root_layer(s_window), (Layer *)s_total_energy_layer);
   
   status_width += PBL_IF_RECT_ELSE(0, 15);
@@ -164,14 +162,14 @@ static void initialise_ui(void) {
 
 static void destroy_ui(void) {
   window_destroy(s_window);
-  bitmap_layer_destroy(s_bitmap_status_area_layer);
-  action_bar_layer_destroy(s_actionbarlayer);
-  text_layer_destroy(s_timelayer);
-  text_layer_destroy(s_current_energy_layer);
-  text_layer_destroy(s_total_energy_layer);
   text_layer_destroy(s_timer_rate_layer);
   text_layer_destroy(s_timer_next_layer);
   text_layer_destroy(s_timer_full_layer);
+  bitmap_layer_destroy(s_bitmap_status_area_layer);
+  action_bar_layer_destroy(s_actionbarlayer);
+  status_bar_layer_destroy(s_statusbarlayer);
+  text_layer_destroy(s_current_energy_layer);
+  text_layer_destroy(s_total_energy_layer);
 }
 
 static void handle_window_unload(Window* window) {
@@ -188,4 +186,36 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 
 static void timers_update_handler(void) {
 	
+}
+
+static void update_energy(uint8_t amount) {
+	settings()->current_energy += amount;
+	if (settings()->current_energy > settings()->max_energy) {
+		settings()->current_energy = settings()->max_energy;
+	}
+	if (settings()->current_energy < 0) {
+		settings()->current_energy = 0;
+	}
+	//snprintf(s_str_max_eng, sizeof(s_str_max_eng), "/%i", settings()->max_energy);
+	snprintf(s_str_current_eng, sizeof(s_str_current_eng), "%i", settings()->current_energy);
+	text_layer_set_text(s_current_energy_layer, s_str_current_eng);
+	//text_layer_set_text(s_total_energy_layer, s_str_max_eng);
+}
+
+static void layer_action_bar_click_config_provider(void *context) {
+	window_single_click_subscribe(BUTTON_ID_UP, action_bar_layer_up_handler);
+	window_single_click_subscribe(BUTTON_ID_DOWN, action_bar_layer_down_handler);
+	window_single_click_subscribe(BUTTON_ID_SELECT, action_bar_layer_select_handler);
+}
+
+static void action_bar_layer_down_handler(ClickRecognizerRef recognizer, void *context) {
+	update_energy(-1);
+}
+
+static void action_bar_layer_up_handler(ClickRecognizerRef recognizer, void *context) {
+	update_energy(1);
+}
+
+static void action_bar_layer_select_handler(ClickRecognizerRef recognizer, void *context) {
+	//TODO: open the menu screen
 }
