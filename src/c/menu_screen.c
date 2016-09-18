@@ -6,6 +6,7 @@
 #include "settings.h"
 #include "icons.h"
 #include "menu_screen.h"
+#include "timer_add_screen.h"
 
 #define MENU_SECTION_MODIFIERS 0
 #define MENU_SECTION_TIMERS 1
@@ -50,6 +51,7 @@ void menu_screen_init(void) {
 	timers_register_update_handler(timers_update_handler);
 	timers_register_highlight_handler(timer_highlight_handler);
 	// Register Sub Windows
+	timer_add_screen_init();
 }
 
 void menu_screen_show(void) {
@@ -195,7 +197,7 @@ static void menu_select_timers(uint16_t row_index) {
 static void menu_select_other(uint16_t row_index) {
   switch (row_index) {
     case MENU_ROW_OTHER_ADD_TIMER:
-      //win_timer_add_show_new();
+      timer_add_screen_show_new();
       break;
     case MENU_ROW_OTHER_ABOUT:
       //win_about_show();
