@@ -1,13 +1,11 @@
 #include <pebble.h>
-#include "menu_screen.h"
-
 #include <@smallstoneapps/utils/macros.h>
 #include <@smallstoneapps/bitmap-loader/bitmap-loader.h>
-
 #include "common.h"
 #include "timers.h"
 #include "settings.h"
 #include "icons.h"
+#include "menu_screen.h"
 
 #define MENU_SECTION_MODIFIERS 0
 #define MENU_SECTION_TIMERS 1

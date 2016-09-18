@@ -45,6 +45,17 @@ Timer* timers_find(uint16_t id) {
     return NULL;
 }
 
+int16_t timers_index_of(uint16_t id) {
+  uint8_t count = timers_count();
+  for (uint8_t c = 0; c < count; c += 1) {
+    Timer* timer = timers_get(c);
+    if (timer->id == id) {
+      return c;
+    }
+  }
+  return -1;
+}
+
 bool timers_add(Timer* timer) {
     linked_list_append(timers, timer);
     return true;

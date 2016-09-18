@@ -16,7 +16,7 @@ void menu_draw_row_icon_text(GContext* ctx, char* text, GBitmap* icon) {
         GTextAlignmentLeft, NULL);
 }
 
-void timer_draw_text(Timer* timer, GContext* ctx) {
+void timer_draw_row(Timer* timer, GContext* ctx) {
     char* time_left = malloc(12);
     timer_time_str(timer->current_time, time_left, 12);
 
