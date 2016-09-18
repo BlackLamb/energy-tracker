@@ -10,12 +10,9 @@ typedef struct {
 		bool quicken_enabled;
 		bool accel_enabled;
 		uint8_t accel_tick;
-		// TODO: Old setting to audit
-    bool timers_start_auto;
-    TimerVibration timers_vibration;
+    TimerVibration timers_tick_vibration;
+		TimerVibration timers_finish_vibration;
     uint32_t timers_duration;
-    bool timers_hours;
-    bool show_clock;
 } Settings;
 
 Settings* settings();

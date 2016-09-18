@@ -12,16 +12,10 @@ static void timer_cancel_wakeup(Timer* timer);
 static void timer_set_id(Timer* timer);
 static void timer_completed_action(Timer* timer);
 
-void timer_time_str(uint32_t timer_time, bool showHours, char* str, int str_len) {
-	int hours = timer_time / 3600;
-	int minutes = (showHours ? (timer_time % 3600) : timer_time) / 60;
-	int seconds = (showHours ? (timer_time % 3600) : timer_time) % 60;
-	if (showHours) {
-		snprintf(str, str_len, "%02d:%02d:%02d", hours, minutes, seconds);
-	}
-	else {
-		snprintf(str, str_len, "%02d:%02d", minutes, seconds);
-	}
+void timer_time_str(uint32_t timer_time, char* str, int str_len) {
+	int minutes = timer_time / 60;
+	int seconds = timer_time % 60;
+	snprintf(str, str_len, "%02d:%02d", minutes, seconds);
 }
 
 void timer_start(Timer* timer) {
@@ -99,7 +93,8 @@ Timer* timer_create_timer(void) {
 	timer->status = TIMER_STATUS_STOPPED;
 	timer->accel = settings()->accel_enabled;
 	timer->accel_tick = settings()->accel_tick;
-	timer->base_tick = 1;
+	timer->base_amount = 1;
+	timer->current_amount = 1;
 	timer->current_tick = 3;
 	timer_set_id(timer);
 	return timer;
@@ -202,7 +197,7 @@ static void timer_set_id(Timer* timer) {
 
 static void timer_completed_action(Timer* timer) {
 	//TODO: Add energy refill logic
-	switch (settings()->timers_vibration) {
+	switch (settings()->timers_tick_vibration) {
 		case TIMER_VIBE_NONE:
 			break;
 		case TIMER_VIBE_SHORT:

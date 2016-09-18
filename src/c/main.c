@@ -22,8 +22,6 @@ static void init(void) {
   timers_restore();
   main_screen_init();
   main_screen_show();
-  main_screen_show_status_area();
-  main_screen_hide_status_area();
 }
 
 static void deinit(void) {

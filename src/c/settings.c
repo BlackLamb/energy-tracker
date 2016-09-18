@@ -12,11 +12,9 @@ Settings _settings = {
 		.quicken_enabled = false,
 		.accel_enabled = true,
 		.accel_tick = 3,
-    .timers_start_auto = false,
-    .timers_vibration = TIMER_VIBE_SHORT,
-    .timers_duration = 5 * 60,
-    .timers_hours = false,
-    .show_clock = true
+    .timers_tick_vibration = TIMER_VIBE_SHORT,
+		.timers_finish_vibration = TIMER_VIBE_DOUBLE,
+    .timers_duration = 5 * 60
 };
 
 void settings_load(void) {

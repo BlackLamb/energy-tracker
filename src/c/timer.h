@@ -26,11 +26,12 @@ typedef struct Timer {
 	WakeupId wakeup_id;
 	bool accel;
 	uint8_t accel_tick;
-	uint8_t base_tick;
 	uint8_t current_tick;
+	uint8_t base_amount;
+	uint8_t current_amount;
 } Timer;
 
-void timer_time_str(uint32_t timer_time, bool showHours, char* str, int str_len);
+void timer_time_str(uint32_t timer_time, char* str, int str_len);
 void timer_start(Timer* timer);
 void timer_pause(Timer* timer);
 void timer_resume(Timer* timer);

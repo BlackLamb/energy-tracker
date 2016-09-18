@@ -4,9 +4,11 @@
 #include <@smallstoneapps/utils/macros.h>
 #include <@smallstoneapps/bitmap-loader/bitmap-loader.h>
 
-#include "src/c/timers.h"
-#include "src/c/settings.h"
-#include "src/c/icons.h"
+#include "timers.h"
+#include "timer.h"
+#include "settings.h"
+#include "icons.h"
+#include "menu_screen.h"
 
 #define STATUS_START_HEIGHT 110
 #define STATUS_BOX_WIDTH PBL_IF_RECT_ELSE(113, 151)
@@ -24,6 +26,7 @@ static TextLayer *s_timer_next_layer;
 static TextLayer *s_timer_full_layer;
 static char s_str_current_eng[] = "99";
 static char s_str_max_eng[] = "/99";
+static Timer* s_current_timer = NULL;
 
 static void initialise_ui(void);
 static void destroy_ui(void);
@@ -36,19 +39,26 @@ static void layer_action_bar_click_config_provider(void *context);
 static void action_bar_layer_down_handler(ClickRecognizerRef recognizer, void *context);
 static void action_bar_layer_up_handler(ClickRecognizerRef recognizer, void *context);
 static void action_bar_layer_select_handler(ClickRecognizerRef recognizer, void *context);
+static void update_timer_status(void);
 
 void main_screen_init(void) {
 	initialise_ui();
   window_set_window_handlers(s_window, (WindowHandlers) {
     .unload = handle_window_unload,
   });
+	menu_screen_init();
 }
 
 void main_screen_show(void) {
   window_stack_push(s_window, true);
 }
 
-void main_screen_show_status_area(void) {
+void main_screen_show_status_area(Timer* timer) {
+	s_current_timer = timer;
+	//Timer Text
+	update_timer_status();
+	
+	//Animation
 	layer_show((Layer *)s_bitmap_status_area_layer);
 	GRect anim_start = GRect(PBL_IF_RECT_ELSE(-1, -3), PEBBLE_HEIGHT, STATUS_BOX_WIDTH, STATUS_BOX_HEIGHT);
 	GRect anim_end = GRect(PBL_IF_RECT_ELSE(-1, -3), STATUS_START_HEIGHT, STATUS_BOX_WIDTH, STATUS_BOX_HEIGHT);
@@ -63,7 +73,7 @@ void main_screen_show_status_area(void) {
 	animation_schedule(anim);
 }
 
-void main_screen_hide_status_area(void) {
+void main_screen_hide_status_area(bool finished) {
 	GRect anim_start = GRect(PBL_IF_RECT_ELSE(-1, -3), STATUS_START_HEIGHT, STATUS_BOX_WIDTH, STATUS_BOX_HEIGHT);
 	GRect anim_end = GRect(PBL_IF_RECT_ELSE(-1, -3), PEBBLE_HEIGHT, STATUS_BOX_WIDTH, STATUS_BOX_HEIGHT);
 	GRect layer_current = layer_get_frame((Layer *)s_bitmap_status_area_layer);
@@ -77,6 +87,11 @@ void main_screen_hide_status_area(void) {
 	animation_set_handlers(anim, (AnimationHandlers) {
   		.stopped = anim_stopped_handler
 		}, NULL);
+	if (finished) {
+		animation_set_delay(anim, 5000);
+		text_layer_set_text(s_timer_next_layer, "FULL!!!");
+		text_layer_set_text(s_timer_full_layer, "");
+	}
 	animation_schedule(anim);
 }
 
@@ -133,7 +148,7 @@ static void initialise_ui(void) {
   s_timer_rate_layer = text_layer_create(GRect(PBL_IF_RECT_ELSE(1, 3), 0, PBL_IF_RECT_ELSE(status_width - 1, PEBBLE_WIDTH), 18));
   text_layer_set_background_color(s_timer_rate_layer, GColorClear);
   text_layer_set_text_color(s_timer_rate_layer, GColorBlack);
-  text_layer_set_text(s_timer_rate_layer, "1 / 5:00");
+  text_layer_set_text(s_timer_rate_layer, "");
   text_layer_set_text_alignment(s_timer_rate_layer, GTextAlignmentCenter);
   text_layer_set_font(s_timer_rate_layer, s_res_gothic_18_bold);
   layer_add_child((Layer *)s_bitmap_status_area_layer, (Layer *)s_timer_rate_layer);
@@ -143,7 +158,7 @@ static void initialise_ui(void) {
   s_timer_next_layer = text_layer_create(GRect(PBL_IF_RECT_ELSE(1, 3), 18, PBL_IF_RECT_ELSE(status_width - 1, PEBBLE_WIDTH), 18));
   text_layer_set_background_color(s_timer_next_layer, GColorClear);
   text_layer_set_text_color(s_timer_next_layer, GColorBlack);
-  text_layer_set_text(s_timer_next_layer, "Next: 4:30");
+  text_layer_set_text(s_timer_next_layer, "");
   text_layer_set_text_alignment(s_timer_next_layer, GTextAlignmentCenter);
   text_layer_set_font(s_timer_next_layer, s_res_gothic_18_bold);
   layer_add_child((Layer *)s_bitmap_status_area_layer, (Layer *)s_timer_next_layer);
@@ -152,7 +167,7 @@ static void initialise_ui(void) {
   s_timer_full_layer = text_layer_create(GRect(PBL_IF_RECT_ELSE(1, 3), 36, PBL_IF_RECT_ELSE(status_width - 1, PEBBLE_WIDTH), 18));
   text_layer_set_background_color(s_timer_full_layer, GColorClear);
   text_layer_set_text_color(s_timer_full_layer, GColorBlack);
-  text_layer_set_text(s_timer_full_layer, "Full: 29:30");
+  text_layer_set_text(s_timer_full_layer, "");
   text_layer_set_text_alignment(s_timer_full_layer, GTextAlignmentCenter);
   text_layer_set_font(s_timer_full_layer, s_res_gothic_18_bold);
   layer_add_child((Layer *)s_bitmap_status_area_layer, (Layer *)s_timer_full_layer);
@@ -185,7 +200,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
 }
 
 static void timers_update_handler(void) {
-	
+	update_timer_status();
 }
 
 static void update_energy(int8_t amount) {
@@ -218,4 +233,30 @@ static void action_bar_layer_up_handler(ClickRecognizerRef recognizer, void *con
 
 static void action_bar_layer_select_handler(ClickRecognizerRef recognizer, void *context) {
 	//TODO: open the menu screen
+	menu_screen_show();
+}
+
+static void update_timer_status(void) {
+	if (NULL == s_current_timer) { 
+		main_screen_hide_status_area(false);
+		return; 
+	}
+	char timer_rate[] = "00 / 00:00";
+	char timer_next[] = "Next: 04:30";
+	char timer_full[] = "Full: 29:30";
+	int minutes = s_current_timer->length / 60;
+	int seconds = s_current_timer->length % 60;
+	uint8_t eng_amount = s_current_timer->current_amount;
+	snprintf(timer_rate, sizeof(timer_rate), "%i / %02d:%02d", eng_amount, minutes, seconds);
+	
+	minutes = s_current_timer->current_time / 60;
+	seconds = s_current_timer->current_time % 60;
+	snprintf(timer_next, sizeof(timer_next), "Next: %02d:%02d", minutes, seconds);
+	
+	//TODO: Get full time estimate
+	snprintf(timer_full, sizeof(timer_full), "Full: %02d:%02d", minutes, seconds);
+	
+	text_layer_set_text(s_timer_rate_layer, timer_rate);
+	text_layer_set_text(s_timer_next_layer, timer_next);
+	text_layer_set_text(s_timer_full_layer, timer_full);
 }

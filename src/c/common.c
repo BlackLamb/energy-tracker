@@ -18,7 +18,7 @@ void menu_draw_row_icon_text(GContext* ctx, char* text, GBitmap* icon) {
 
 void timer_draw_text(Timer* timer, GContext* ctx) {
     char* time_left = malloc(12);
-    timer_time_str(timer->current_time, settings()->timers_hours, time_left, 12);
+    timer_time_str(timer->current_time, time_left, 12);
 
     graphics_context_set_text_color(ctx, GColorBlack);
     graphics_context_set_fill_color(ctx, GColorBlack);
