@@ -132,7 +132,7 @@ static void menu_draw_row_modifiers(GContext* ctx, const Layer* cell_layer, uint
 static void menu_draw_row_timers(GContext* ctx, const Layer* cell_layer, uint16_t row_index) {
   Timer* timer = timers_get(row_index);
   if (! timer) { return; }
-  timer_draw_row(timer, ctx);
+	timer_draw_row(timer, ctx);
 }
 
 static void menu_draw_row_other(GContext* ctx, const Layer* cell_layer, uint16_t row_index) {
