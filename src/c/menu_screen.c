@@ -7,6 +7,7 @@
 #include "icons.h"
 #include "menu_screen.h"
 #include "timer_add_screen.h"
+#include "duration_screen.h"
 
 #define MENU_SECTION_MODIFIERS 0
 #define MENU_SECTION_TIMERS 1
@@ -52,6 +53,7 @@ void menu_screen_init(void) {
 	timers_register_highlight_handler(timer_highlight_handler);
 	// Register Sub Windows
 	timer_add_screen_init();
+	duration_screen_init();
 }
 
 void menu_screen_show(void) {

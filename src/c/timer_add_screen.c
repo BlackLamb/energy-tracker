@@ -5,6 +5,7 @@
 #include "timer.h"
 #include "common.h"
 #include "settings.h"
+#include "duration_screen.h"
 
 #define MENU_SECTION_MAIN   0
 #define MENU_SECTION_FOOTER 1
@@ -158,7 +159,7 @@ static void menu_select_click_callback(MenuLayer *menu_layer, MenuIndex *cell_in
 static void menu_select_main(uint16_t row) {
   switch (row) {
     case MENU_ROW_DURATION:
-      //win_duration_show(s_timer->length, duration_callback);
+      duration_screen_show(s_timer->length, duration_callback);
     break;
     case MENU_ROW_BASE_TICK:
       //TODO: Set INT
