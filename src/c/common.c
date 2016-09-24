@@ -16,7 +16,7 @@ void menu_draw_row_icon_text(GContext* ctx, char* text, GBitmap* icon) {
         GTextAlignmentLeft, NULL);
 }
 
-void timer_draw_row(Timer* timer, GContext* ctx) {
+void timer_draw_row(Timer* timer, bool center, GContext* ctx) {
     char* time_left = malloc(12);
     timer_time_str(timer->current_time, time_left, 12);
 
@@ -25,8 +25,8 @@ void timer_draw_row(Timer* timer, GContext* ctx) {
 
     graphics_draw_text(ctx, time_left,
         fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD),
-        GRect(33, -3, PEBBLE_WIDTH - 33, 28), GTextOverflowModeFill,
-        GTextAlignmentLeft, NULL);
+        center ? GRect(0, -3, PEBBLE_WIDTH, 28) : GRect(33, -3, PEBBLE_WIDTH - 33, 28), GTextOverflowModeFill,
+        center ? GTextAlignmentCenter : GTextAlignmentLeft, NULL);
     
     GBitmap* bmp_icon = NULL;
     GBitmap* bmp_direction = bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_TIMER);
@@ -54,7 +54,7 @@ void timer_draw_row(Timer* timer, GContext* ctx) {
     if (bmp_direction) {
         graphics_draw_bitmap_in_rect(ctx, bmp_direction, GRect(PEBBLE_WIDTH - 8 - 8, 9 , 8, 16));
     }
-    uint8_t width = (144 * timer->current_time) / timer->length;
+    uint8_t width = (PEBBLE_WIDTH * timer->current_time) / timer->length;
     graphics_fill_rect(ctx, GRect(0, 31, width, 2), 0, GCornerNone);
 
     free(time_left);

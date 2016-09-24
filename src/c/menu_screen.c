@@ -12,6 +12,7 @@
 #include "about_screen.h"
 #include "settings_screen.h"
 #include "vibration_screen.h"
+#include "timer_screen.h"
 
 #define MENU_SECTION_MODIFIERS 0
 #define MENU_SECTION_TIMERS 1
@@ -62,6 +63,7 @@ void menu_screen_init(void) {
 	about_screen_init();
 	settings_screen_init();
 	vibration_screen_init();
+	timer_screen_init();
 }
 
 void menu_screen_show(void) {
@@ -142,7 +144,7 @@ static void menu_draw_row_modifiers(GContext* ctx, const Layer* cell_layer, uint
 static void menu_draw_row_timers(GContext* ctx, const Layer* cell_layer, uint16_t row_index) {
   Timer* timer = timers_get(row_index);
   if (! timer) { return; }
-	timer_draw_row(timer, ctx);
+	timer_draw_row(timer, false, ctx);
 }
 
 static void menu_draw_row_other(GContext* ctx, const Layer* cell_layer, uint16_t row_index) {
@@ -221,9 +223,9 @@ static void menu_select_other(uint16_t row_index) {
 
 static void menu_select_long(struct MenuLayer* menu, MenuIndex* cell_index, void* callback_context) {
   if (cell_index->section == MENU_SECTION_TIMERS) {
-    //Timer* timer = timers_get(cell_index->row);
-    //win_timer_set_timer(timer);
-    //win_timer_show();
+    Timer* timer = timers_get(cell_index->row);
+    timer_screen_set_timer(timer);
+    timer_screen_show();
   }
 }
 

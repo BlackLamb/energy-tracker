@@ -22,7 +22,6 @@
                 },
                 {
                     "file": "images/icons.png",
-                    "memoryFormat": "1Bit",
                     "name": "ICONS_16",
                     "targetPlatforms": null,
                     "type": "bitmap"
