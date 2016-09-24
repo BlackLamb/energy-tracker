@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include <@smallstoneapps/utils/macros.h>
 #include <@smallstoneapps/bitmap-loader/bitmap-loader.h>
 #include "src/c/main_screen.h"
 #include "timers.h"
@@ -8,13 +9,15 @@
 static void init(void);
 static void deinit(void);
 
-int main(void) {
+int main(void)
+{
   init();
   app_event_loop();
   deinit();
 }
 
-static void init(void) {
+static void init(void)
+{
   srand(time(NULL));
   timers_init();
   bitmaps_init();
@@ -24,7 +27,8 @@ static void init(void) {
   main_screen_show();
 }
 
-static void deinit(void) {
+static void deinit(void)
+{
   timers_save();
   settings_save();
   bitmaps_cleanup();
