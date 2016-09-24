@@ -6,6 +6,7 @@
 #include "common.h"
 #include "settings.h"
 #include "duration_screen.h"
+#include "amount_screen.h"
 
 #define MENU_SECTION_MAIN   0
 #define MENU_SECTION_FOOTER 1
@@ -134,14 +135,19 @@ static void menu_draw_row_main(GContext* ctx, uint16_t row) {
       menu_draw_option(ctx, "Rate", tmp);
       break;
     case MENU_ROW_BASE_TICK:
+			snprintf(tmp, 16, "%02d", s_timer->base_amount);
       menu_draw_option(ctx, "Energy", tmp);
       break;
     case MENU_ROW_ACCELERATION:
       menu_draw_option(ctx, "Acceleration", (s_timer->accel) ? "ON" : "OFF");
       break;
-		case MENU_ROW_ACCELERATION_TICK:
-			menu_draw_option(ctx, "Accelerate On", tmp);
+		case MENU_ROW_ACCELERATION_TICK: {
+			if (s_timer->accel) {
+				snprintf(tmp, 16, "%02d", s_timer->accel_tick);
+				menu_draw_option(ctx, "Accelerate On", tmp);
+			}
 			break;
+		}
   }
 }
 
@@ -162,14 +168,14 @@ static void menu_select_main(uint16_t row) {
       duration_screen_show(s_timer->length, duration_callback);
     break;
     case MENU_ROW_BASE_TICK:
-      //TODO: Set INT
+      amount_screen_show(s_timer->base_amount, "ENERGY", amount_callback);
     break;
     case MENU_ROW_ACCELERATION:
-      //TODO: Enable Acceleration
+      s_timer->accel = !(s_timer->accel);
       menu_layer_reload_data(s_menu);
     break;
 		case MENU_ROW_ACCELERATION_TICK:
-			//TODO: Set INT
+			amount_screen_show(s_timer->accel_tick, "ACCEL #", accel_amount_callback);
 		break;
   }
 }

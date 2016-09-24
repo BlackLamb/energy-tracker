@@ -17,9 +17,9 @@ static void action_bar_layer_select_handler(ClickRecognizerRef recognizer, void 
 static Window* s_window;
 static Layer* s_layer;
 static ActionBarLayer* s_action_bar;
-static uint8_t s_amount = 0;
+static int8_t s_amount = 0;
 static char* s_display_str;
-static DurationCallback s_callback;
+static AmountCallback s_callback;
 
 static GFont s_font_duration;
 
@@ -69,7 +69,7 @@ static void layer_update(Layer* me, GContext* ctx) {
 	char* num_str = "000";
 	snprintf(num_str, 3, "%02d", s_amount);
 
-	graphics_draw_text(ctx, time_str, s_font_duration, GRect(0, 27, PEBBLE_WIDTH - 16, 70), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
+	graphics_draw_text(ctx, num_str, s_font_duration, GRect(0, 27, PEBBLE_WIDTH - 16, 70), GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
 }
 
 static void layer_action_bar_click_config_provider(void *context) {
@@ -95,7 +95,6 @@ static void action_bar_layer_up_handler(ClickRecognizerRef recognizer, void *con
 }
 
 static void action_bar_layer_select_handler(ClickRecognizerRef recognizer, void *context) {
-	switch (s_mode) {
-		s_callback(s_amount);
-		window_stack_pop(true);
+	s_callback(s_amount);
+	window_stack_pop(true);
 }

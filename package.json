@@ -8,7 +8,7 @@
     "keywords": [],
     "name": "energy-counter",
     "pebble": {
-        "displayName": "Energy Counter",
+        "displayName": "LARP Energy Counter",
         "enableMultiJS": true,
         "messageKeys": [],
         "projectType": "native",
@@ -22,6 +22,7 @@
                 },
                 {
                     "file": "images/icons.png",
+                    "memoryFormat": "1Bit",
                     "name": "ICONS_16",
                     "targetPlatforms": null,
                     "type": "bitmap"

@@ -8,6 +8,10 @@
 #include "menu_screen.h"
 #include "timer_add_screen.h"
 #include "duration_screen.h"
+#include "amount_screen.h"
+#include "about_screen.h"
+#include "settings_screen.h"
+#include "vibration_screen.h"
 
 #define MENU_SECTION_MODIFIERS 0
 #define MENU_SECTION_TIMERS 1
@@ -54,6 +58,10 @@ void menu_screen_init(void) {
 	// Register Sub Windows
 	timer_add_screen_init();
 	duration_screen_init();
+	amount_screen_init();
+	about_screen_init();
+	settings_screen_init();
+	vibration_screen_init();
 }
 
 void menu_screen_show(void) {
@@ -169,6 +177,7 @@ static void menu_select_modifiers(uint16_t row_index) {
 	switch (row_index) {
 		case MENU_ROW_MODIFIERS_QUICKEN:
 			settings()->quicken_enabled = !settings()->quicken_enabled;
+			menu_layer_reload_data(s_menu);
 			break;
 		default:
 			break;
@@ -202,10 +211,10 @@ static void menu_select_other(uint16_t row_index) {
       timer_add_screen_show_new();
       break;
     case MENU_ROW_OTHER_ABOUT:
-      //win_about_show();
+			about_screen_show();
       break;
     case MENU_ROW_OTHER_SETTINGS:
-      //win_settings_show();
+      settings_screen_show();
       break;
   }
 }
