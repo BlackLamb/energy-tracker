@@ -165,7 +165,7 @@ static void menu_draw_row_timers(GContext *ctx, const Layer *cell_layer, uint16_
   {
     return;
   }
-  timer_draw_row(timer, false, ctx);
+  timer_draw_row(timer, true, false, ctx);
 }
 
 static void menu_draw_row_other(GContext *ctx, const Layer *cell_layer, uint16_t row_index)

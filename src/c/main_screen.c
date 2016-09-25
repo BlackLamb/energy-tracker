@@ -57,6 +57,16 @@ void main_screen_show(void)
 
 void main_screen_show_status_area(Timer *timer)
 {
+  Window *current_window = window_stack_get_top_window();
+  if (window_stack_contains_window(s_window) && current_window != s_window) 
+  {
+      while (current_window != s_window) 
+      {
+          window_stack_pop(false);
+          current_window = window_stack_get_top_window();
+      }
+  }
+  
   s_current_timer = timer;
   //Timer Text
   update_timer_status();
@@ -280,7 +290,9 @@ static void update_timer_status(void)
   snprintf(timer_next, sizeof(timer_next), "Next: %02d:%02d", minutes, seconds);
 
   //TODO: Get full time estimate
-  snprintf(timer_full, sizeof(timer_full), "Full: %02d:%02d", minutes, seconds);
+  minutes = s_current_timer->full_time / 60;
+  seconds = s_current_timer->full_time % 60;
+  snprintf(timer_full, sizeof(timer_full), "Full: %d:%02d", minutes, seconds);
 
   text_layer_set_text(s_timer_rate_layer, timer_rate);
   text_layer_set_text(s_timer_next_layer, timer_next);

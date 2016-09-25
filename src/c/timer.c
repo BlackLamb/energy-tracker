@@ -2,6 +2,7 @@
 #include "timer.h"
 #include "timers.h"
 #include "settings.h"
+#include "main_screen.h"
 
 static void timer_tick(void *context);
 static void timer_finish(Timer *timer);
@@ -25,7 +26,9 @@ void timer_start(Timer *timer)
     timer->status = TIMER_STATUS_RUNNING;
     timer_schedule_tick(timer);
     timer_schedule_wakeup(timer, 0);
+    timer_update_energy_per_tick(timer);
     timers_mark_updated();
+    main_screen_show_status_area(timer);
 }
 
 void timer_pause(Timer *timer)
@@ -48,7 +51,10 @@ void timer_reset(Timer *timer)
 {
     timer_pause(timer);
     timer->current_time = timer->length;
+    timer->current_amount = timer->base_amount;
+    timer->current_tick = 1;
     timer->status = TIMER_STATUS_STOPPED;
+    timer_update_energy_per_tick(timer);
     timers_mark_updated();
 }
 
@@ -109,9 +115,58 @@ Timer *timer_create_timer(void)
     timer->accel_tick = settings()->accel_tick;
     timer->base_amount = 1;
     timer->current_amount = 1;
-    timer->current_tick = 3;
+    timer->current_tick = 1;
     timer_set_id(timer);
+    timer_refresh_info(timer);
     return timer;
+}
+
+void timer_update_energy_per_tick(Timer *timer)
+{
+    uint8_t update = timer->base_amount;
+    if (timer->accel) 
+    {
+        update += timer->current_tick / timer->accel_tick;
+    }
+    if (settings()->quicken_enabled)
+    {
+        update *= 2;
+    }
+    timer->current_amount = update;
+}
+
+void timer_time_till_full(Timer *timer) 
+{
+    uint32_t eta_time = 0;
+    Timer *temp_timer = timer_clone(timer);
+    eta_time = temp_timer->current_time;
+    
+    uint8_t energy = settings()->current_energy + temp_timer->current_amount;
+    if (energy >= settings()->max_energy) 
+    {
+        //free(temp_timer);
+        timer->full_time = eta_time;
+    }
+    
+    uint8_t additional_ticks = 0;
+    while (energy < settings()->max_energy) 
+    {
+        additional_ticks += 1;
+        temp_timer->current_tick += 1;
+        timer_update_energy_per_tick(temp_timer);
+        energy += temp_timer->current_amount;
+    }
+    
+    eta_time += (additional_ticks * temp_timer->length);
+    
+    //free(temp_timer);
+    timer->full_time = eta_time;
+}
+
+void timer_refresh_info(Timer *timer) 
+{
+    timer_update_energy_per_tick(timer);
+    timer_time_till_full(timer);
 }
 
 static void timer_tick(void *context)
@@ -233,39 +288,60 @@ static void timer_set_id(Timer *timer)
 
 static void timer_completed_action(Timer *timer)
 {
+    TimerVibration current_vibration = settings()->timers_tick_vibration;
+    bool finished = false;
+    
     //TODO: Add energy refill logic
-    switch (settings()->timers_tick_vibration)
+    settings()->current_energy += timer->current_amount;
+    
+    if (settings()->current_energy >= settings()->max_energy) 
     {
-    case TIMER_VIBE_NONE:
-	break;
-    case TIMER_VIBE_SHORT:
-	vibes_short_pulse();
-	break;
-    case TIMER_VIBE_LONG:
-	vibes_long_pulse();
-	break;
-    case TIMER_VIBE_DOUBLE:
+        current_vibration = settings()->timers_finish_vibration;
+        finished = true;
+        settings()->current_energy = settings()->max_energy;
+    }
+    
+    switch (current_vibration)
     {
-	const uint32_t seg[] = {600, 200, 600};
-	VibePattern pattern = {
-	    .durations = seg,
-	    .num_segments = ARRAY_LENGTH(seg)};
-	vibes_enqueue_custom_pattern(pattern);
-	break;
+        case TIMER_VIBE_NONE:
+	    break;
+        case TIMER_VIBE_SHORT:
+	        vibes_short_pulse();
+	    break;
+        case TIMER_VIBE_LONG:
+	        vibes_long_pulse();
+	    break;
+        case TIMER_VIBE_DOUBLE:
+        {
+	        const uint32_t seg[] = {600, 200, 600};
+	        VibePattern pattern = {
+	            .durations = seg,
+	            .num_segments = ARRAY_LENGTH(seg)};
+	        vibes_enqueue_custom_pattern(pattern);
+	        break;
+        }
+        case TIMER_VIBE_TRIPLE:
+        {
+	        const uint32_t seg[] = {600, 200, 600, 200, 600};
+	        VibePattern pattern = {
+	            .durations = seg,
+	            .num_segments = ARRAY_LENGTH(seg)};
+	        vibes_enqueue_custom_pattern(pattern);
+	        break;
+        }
+        default:
+	    break;
     }
-    case TIMER_VIBE_TRIPLE:
+    timer_update_energy_per_tick(timer);
+    if (!finished)
     {
-	const uint32_t seg[] = {600, 200, 600, 200, 600};
-	VibePattern pattern = {
-	    .durations = seg,
-	    .num_segments = ARRAY_LENGTH(seg)};
-	vibes_enqueue_custom_pattern(pattern);
-	break;
+        timer->current_tick +=1;
+        timer_start(timer);
     }
-    default:
-	break;
+    else
+    {
+        timer_reset(timer);
+        main_screen_hide_status_area(true);
     }
-    //TODO: Add checking to see if your full and end timer
-    timer_start(timer);
-    timers_highlight(timer);
+    //timers_highlight(timer);
 }

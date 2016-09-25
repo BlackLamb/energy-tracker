@@ -18,12 +18,23 @@ void menu_draw_row_icon_text(GContext *ctx, char *text, GBitmap *icon)
                        GTextAlignmentLeft, NULL);
 }
 
-void timer_draw_row(Timer *timer, bool center, GContext *ctx)
+void timer_draw_row(Timer *timer, bool rate, bool center, GContext *ctx)
 {
     char *time_left = malloc(12);
-    timer_time_str(timer->current_time, time_left, 12);
+    
+	  if (rate) 
+		{
+			  char *tmp_str = malloc(6);
+			  timer_time_str(timer->current_time, tmp_str, 6);
+			  snprintf(time_left, 12, "%02d in %s", timer->current_amount, tmp_str);
+			  free(tmp_str);
+		} 
+	  else 
+		{
+			timer_time_str(timer->current_time, time_left, 12);
+		}
 
-    graphics_context_set_text_color(ctx, GColorBlack);
+	  graphics_context_set_text_color(ctx, GColorBlack);
     graphics_context_set_fill_color(ctx, GColorBlack);
 
     graphics_draw_text(ctx, time_left,

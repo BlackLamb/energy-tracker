@@ -22,6 +22,7 @@ typedef struct Timer
     uint16_t id;
     uint32_t length;
     uint32_t current_time;
+    uint32_t full_time;
     TimerStatus status;
     AppTimer *timer;
     WakeupId wakeup_id;
@@ -41,4 +42,6 @@ void timer_restore(Timer *timer, uint16_t seconds_elapsed);
 Timer *timer_clone(Timer *timer);
 char *timer_vibe_str(TimerVibration vibe, bool shortStr);
 Timer *timer_create_timer(void);
-Timer *timer_create_stopwatch(void);
+void timer_update_energy_per_tick(Timer *timer);
+void timer_time_till_full(Timer *timer);
+void timer_refresh_info(Timer *timer);

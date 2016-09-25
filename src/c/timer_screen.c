@@ -83,7 +83,7 @@ static void window_unload(Window *window)
 
 static void layer_header_update(Layer *layer, GContext *ctx)
 {
-  timer_draw_row(s_timer, true, ctx);
+  timer_draw_row(s_timer, false, true, ctx);
 }
 
 static uint16_t menu_num_sections(struct MenuLayer *menu, void *callback_context)
