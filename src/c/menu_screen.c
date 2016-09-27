@@ -142,17 +142,8 @@ static void menu_draw_row_modifiers(GContext *ctx, const Layer *cell_layer, uint
   switch (row_index)
   {
   case MENU_ROW_MODIFIERS_QUICKEN:
-  {
-    if (settings()->quicken_enabled)
-    {
-      menu_draw_row_icon_text(ctx, "Quicken", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ADD));
-    }
-    else
-    {
-      menu_draw_row_icon_text(ctx, "Quicken", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_DELETE));
-    }
+    menu_draw_option(ctx, "Quicken", settings()->quicken_enabled ? "ON" : "OFF");
     break;
-  }
   default:
     break;
   }
@@ -235,7 +226,7 @@ static void menu_select_timers(uint16_t row_index)
     timer_resume(timer);
     break;
   case TIMER_STATUS_DONE:
-    timer_reset(timer);
+    timer_reset(timer, false);
     break;
   }
 }
@@ -268,7 +259,7 @@ static void menu_select_long(struct MenuLayer *menu, MenuIndex *cell_index, void
 
 static void timers_update_handler(void)
 {
-  menu_layer_reload_data(s_menu);
+  if (s_menu) { menu_layer_reload_data(s_menu); }
 }
 
 static void timer_highlight_handler(Timer *timer)

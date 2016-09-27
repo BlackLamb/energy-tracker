@@ -26,7 +26,7 @@ void timer_start(Timer *timer)
     timer->status = TIMER_STATUS_RUNNING;
     timer_schedule_tick(timer);
     timer_schedule_wakeup(timer, 0);
-    timer_update_energy_per_tick(timer);
+    timer_refresh_info(timer);
     timers_mark_updated();
     main_screen_show_status_area(timer);
 }
@@ -47,7 +47,7 @@ void timer_resume(Timer *timer)
     timers_mark_updated();
 }
 
-void timer_reset(Timer *timer)
+void timer_reset(Timer *timer, bool return)
 {
     timer_pause(timer);
     timer->current_time = timer->length;
@@ -56,6 +56,10 @@ void timer_reset(Timer *timer)
     timer->status = TIMER_STATUS_STOPPED;
     timer_update_energy_per_tick(timer);
     timers_mark_updated();
+    if (return)
+    {
+        main_screen_hide_status_area(false);
+    }
 }
 
 void timer_restore(Timer *timer, uint16_t seconds_elapsed)
@@ -174,6 +178,7 @@ static void timer_tick(void *context)
     Timer *timer = (Timer *)context;
     timer->timer = NULL;
     timer->current_time -= 1;
+    timer->full_time -= 1;
     if (timer->current_time <= 0)
     {
 	timer_finish(timer);
@@ -340,8 +345,8 @@ static void timer_completed_action(Timer *timer)
     }
     else
     {
-        timer_reset(timer);
-        main_screen_hide_status_area(true);
+        timer_reset(timer, true);
+        //main_screen_hide_status_area(true);
     }
     //timers_highlight(timer);
 }

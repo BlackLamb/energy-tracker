@@ -48,6 +48,7 @@ void main_screen_init(void)
                                            .unload = handle_window_unload,
                                        });
   menu_screen_init();
+  timers_register_update_handler(timers_update_handler);
 }
 
 void main_screen_show(void)
@@ -170,7 +171,7 @@ static void initialise_ui(void)
   s_timer_rate_layer = text_layer_create(GRect(PBL_IF_RECT_ELSE(1, 3), 0, PBL_IF_RECT_ELSE(status_width - 1, PEBBLE_WIDTH), 18));
   text_layer_set_background_color(s_timer_rate_layer, GColorClear);
   text_layer_set_text_color(s_timer_rate_layer, GColorBlack);
-  text_layer_set_text(s_timer_rate_layer, "");
+  text_layer_set_text(s_timer_rate_layer, "00 / 00:00");
   text_layer_set_text_alignment(s_timer_rate_layer, GTextAlignmentCenter);
   text_layer_set_font(s_timer_rate_layer, s_res_gothic_18_bold);
   layer_add_child((Layer *)s_bitmap_status_area_layer, (Layer *)s_timer_rate_layer);
@@ -180,7 +181,7 @@ static void initialise_ui(void)
   s_timer_next_layer = text_layer_create(GRect(PBL_IF_RECT_ELSE(1, 3), 18, PBL_IF_RECT_ELSE(status_width - 1, PEBBLE_WIDTH), 18));
   text_layer_set_background_color(s_timer_next_layer, GColorClear);
   text_layer_set_text_color(s_timer_next_layer, GColorBlack);
-  text_layer_set_text(s_timer_next_layer, "");
+  text_layer_set_text(s_timer_next_layer, "Next: 04:30");
   text_layer_set_text_alignment(s_timer_next_layer, GTextAlignmentCenter);
   text_layer_set_font(s_timer_next_layer, s_res_gothic_18_bold);
   layer_add_child((Layer *)s_bitmap_status_area_layer, (Layer *)s_timer_next_layer);
@@ -189,7 +190,7 @@ static void initialise_ui(void)
   s_timer_full_layer = text_layer_create(GRect(PBL_IF_RECT_ELSE(1, 3), 36, PBL_IF_RECT_ELSE(status_width - 1, PEBBLE_WIDTH), 18));
   text_layer_set_background_color(s_timer_full_layer, GColorClear);
   text_layer_set_text_color(s_timer_full_layer, GColorBlack);
-  text_layer_set_text(s_timer_full_layer, "");
+  text_layer_set_text(s_timer_full_layer, "Full: 29:30");
   text_layer_set_text_alignment(s_timer_full_layer, GTextAlignmentCenter);
   text_layer_set_font(s_timer_full_layer, s_res_gothic_18_bold);
   layer_add_child((Layer *)s_bitmap_status_area_layer, (Layer *)s_timer_full_layer);
@@ -225,7 +226,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
 {
 }
 
-static void timers_update_handler(void)
+static void timers_update_handler (void)
 {
   update_timer_status();
 }
@@ -274,7 +275,7 @@ static void update_timer_status(void)
 {
   if (NULL == s_current_timer)
   {
-    main_screen_hide_status_area(false);
+    //main_screen_hide_status_area(false);
     return;
   }
   char timer_rate[] = "00 / 00:00";
@@ -294,7 +295,11 @@ static void update_timer_status(void)
   seconds = s_current_timer->full_time % 60;
   snprintf(timer_full, sizeof(timer_full), "Full: %d:%02d", minutes, seconds);
 
-  text_layer_set_text(s_timer_rate_layer, timer_rate);
-  text_layer_set_text(s_timer_next_layer, timer_next);
-  text_layer_set_text(s_timer_full_layer, timer_full);
+  //text_layer_set_text_color(s_timer_rate_layer, GColorBlack);
+  //text_layer_set_text(s_timer_rate_layer, timer_rate);
+  //text_layer_set_text(s_timer_next_layer, timer_next);
+  //text_layer_set_text(s_timer_full_layer, timer_full);
+  DEBUG(timer_rate);
+  DEBUG(timer_next);
+  DEBUG(timer_full);
 }

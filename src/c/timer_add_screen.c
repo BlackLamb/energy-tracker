@@ -219,14 +219,14 @@ static void menu_select_footer(void)
     timer->accel = s_timer->accel;
     timer->base_amount = s_timer->base_amount;
     timer->accel_tick = s_timer->accel_tick;
-    timer_reset(timer);
+    timer_reset(timer,false);
     window_stack_pop(true);
     timers_mark_updated();
   }
   else
   {
     Timer *timer = timer_clone(s_timer);
-    timer_reset(timer);
+    timer_reset(timer, false);
     timers_add(timer);
     window_stack_pop(true);
     timers_mark_updated();

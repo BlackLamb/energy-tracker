@@ -156,7 +156,7 @@ static void menu_select(struct MenuLayer *menu, MenuIndex *cell_index, void *cal
     break;
   }
   case MENU_ROW_RESET:
-    timer_reset(s_timer);
+    timer_reset(s_timer, false);
     break;
   case MENU_ROW_DELETE:
     timers_remove(timers_index_of(s_timer->id));
