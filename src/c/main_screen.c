@@ -95,6 +95,7 @@ void main_screen_show_status_area(Timer *timer)
 
 void main_screen_hide_status_area(bool finished)
 {
+  s_current_timer = NULL;
   GRect anim_start = GRect(PBL_IF_RECT_ELSE(-1, -3), STATUS_START_HEIGHT, STATUS_BOX_WIDTH, STATUS_BOX_HEIGHT);
   GRect anim_end = GRect(PBL_IF_RECT_ELSE(-1, -3), PEBBLE_HEIGHT, STATUS_BOX_WIDTH, STATUS_BOX_HEIGHT);
   GRect layer_current = layer_get_frame((Layer *)s_bitmap_status_area_layer);
@@ -147,7 +148,7 @@ static void initialise_ui(void)
   action_bar_layer_set_background_color(s_actionbarlayer, GColorWhite);
   action_bar_layer_set_click_config_provider(s_actionbarlayer, layer_action_bar_click_config_provider);
   action_bar_layer_set_icon(s_actionbarlayer, BUTTON_ID_UP, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ACTION_INC));
-  action_bar_layer_set_icon(s_actionbarlayer, BUTTON_ID_SELECT, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ACTION_TICK));
+  action_bar_layer_set_icon(s_actionbarlayer, BUTTON_ID_SELECT, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ACTION_MENU));
   action_bar_layer_set_icon(s_actionbarlayer, BUTTON_ID_DOWN, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ACTION_DEC));
   layer_add_child(window_get_root_layer(s_window), (Layer *)s_actionbarlayer);
 
@@ -209,6 +210,7 @@ static void initialise_ui(void)
 static void destroy_ui(void)
 {
   window_destroy_safe(s_window);
+  menu_screen_destroy();
   text_layer_destroy_safe(s_timer_rate_layer);
   text_layer_destroy_safe(s_timer_next_layer);
   text_layer_destroy_safe(s_timer_full_layer);

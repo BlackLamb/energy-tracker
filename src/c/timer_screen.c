@@ -115,26 +115,26 @@ static void menu_draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cel
     switch (s_timer->status)
     {
     case TIMER_STATUS_RUNNING:
-      menu_draw_row_icon_text(ctx, "Pause", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_PAUSE), invert);
+      menu_draw_row_icon_text(ctx, "Pause", bitmaps_get_sub_bitmap(invert ? RESOURCE_ID_ICON_16_INVERTED : RESOURCE_ID_ICONS_16, ICON_RECT_PAUSE), invert);
       break;
     case TIMER_STATUS_PAUSED:
-      menu_draw_row_icon_text(ctx, "Resume", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_PLAY), invert);
+      menu_draw_row_icon_text(ctx, "Resume", bitmaps_get_sub_bitmap(invert ? RESOURCE_ID_ICON_16_INVERTED : RESOURCE_ID_ICONS_16, ICON_RECT_PAUSE), invert);
       break;
     case TIMER_STATUS_DONE:
     case TIMER_STATUS_STOPPED:
-      menu_draw_row_icon_text(ctx, "Start", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_PLAY), invert);
+      menu_draw_row_icon_text(ctx, "Start", bitmaps_get_sub_bitmap(invert ? RESOURCE_ID_ICON_16_INVERTED : RESOURCE_ID_ICONS_16, ICON_RECT_PLAY), invert);
       break;
     }
     break;
   }
   case MENU_ROW_RESET:
-    menu_draw_row_icon_text(ctx, "Reset", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_RESET), invert);
+    menu_draw_row_icon_text(ctx, "Reset", bitmaps_get_sub_bitmap(invert ? RESOURCE_ID_ICON_16_INVERTED : RESOURCE_ID_ICONS_16, ICON_RECT_RESET), invert);
     break;
   case MENU_ROW_DELETE:
-    menu_draw_row_icon_text(ctx, "Delete", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_DELETE), invert);
+    menu_draw_row_icon_text(ctx, "Delete", bitmaps_get_sub_bitmap(invert ? RESOURCE_ID_ICON_16_INVERTED : RESOURCE_ID_ICONS_16, ICON_RECT_DELETE), invert);
     break;
   case MENU_ROW_EDIT:
-    menu_draw_row_icon_text(ctx, "Edit", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_EDIT), invert);
+    menu_draw_row_icon_text(ctx, "Edit", bitmaps_get_sub_bitmap(invert ? RESOURCE_ID_ICON_16_INVERTED : RESOURCE_ID_ICONS_16, ICON_RECT_EDIT), invert);
     break;
   }
 }

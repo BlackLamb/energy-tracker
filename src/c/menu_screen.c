@@ -72,6 +72,19 @@ void menu_screen_show(void)
   window_stack_push(s_window, true);
 }
 
+void menu_screen_destroy(void) 
+{
+  window_destroy_safe(s_window);
+  //Destroy the sub screens
+  //timer_add_screen_destroy();
+  //duration_screen_init();
+  //amount_screen_init();
+  //about_screen_init();
+  //settings_screen_init();
+  //vibration_screen_init();
+  //timer_screen_init();
+}
+
 static void window_load(Window *window)
 {
   s_menu = menu_layer_create_fullscreen(s_window);

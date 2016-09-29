@@ -1,5 +1,5 @@
 {
-    "author": "Fathom Game",
+    "author": "Fathom",
     "dependencies": {
         "@smallstoneapps/bitmap-loader": "^1.2.3",
         "@smallstoneapps/linked-list": "^1.3.0",
@@ -15,7 +15,14 @@
         "resources": {
             "media": [
                 {
-                    "file": "images/iconsInv.png",
+                    "file": "images/AppIcon.png",
+                    "menuIcon": true,
+                    "name": "APP_ICON",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
+                    "file": "images/icons_inverted.png",
                     "name": "ICON_16_INVERTED",
                     "targetPlatforms": null,
                     "type": "bitmap"
