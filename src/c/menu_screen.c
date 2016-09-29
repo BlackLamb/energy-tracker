@@ -13,6 +13,7 @@
 #include "settings_screen.h"
 #include "vibration_screen.h"
 #include "timer_screen.h"
+#include "main_screen.h"
 
 #define MENU_SECTION_MODIFIERS 0
 #define MENU_SECTION_TIMERS 1
@@ -139,10 +140,14 @@ static void menu_draw_row(GContext *ctx, const Layer *cell_layer, MenuIndex *cel
 
 static void menu_draw_row_modifiers(GContext *ctx, const Layer *cell_layer, uint16_t row_index)
 {
+  bool invert = false;
+  if(menu_cell_layer_is_highlighted(cell_layer)) {
+      invert = true;
+  }
   switch (row_index)
   {
   case MENU_ROW_MODIFIERS_QUICKEN:
-    menu_draw_option(ctx, "Quicken", settings()->quicken_enabled ? "ON" : "OFF");
+    menu_draw_option(ctx, "Quicken", settings()->quicken_enabled ? "ON" : "OFF", invert);
     break;
   default:
     break;
@@ -151,27 +156,35 @@ static void menu_draw_row_modifiers(GContext *ctx, const Layer *cell_layer, uint
 
 static void menu_draw_row_timers(GContext *ctx, const Layer *cell_layer, uint16_t row_index)
 {
+  bool invert = false;
+  if(menu_cell_layer_is_highlighted(cell_layer)) {
+      invert = true;
+  }
   Timer *timer = timers_get(row_index);
   if (!timer)
   {
     return;
   }
   timer_update_energy_per_tick(timer);
-  timer_draw_row(timer, true, false, ctx);
+  timer_draw_row(timer, true, false, ctx, invert);
 }
 
 static void menu_draw_row_other(GContext *ctx, const Layer *cell_layer, uint16_t row_index)
 {
+  bool invert = false;
+  if(menu_cell_layer_is_highlighted(cell_layer)) {
+      invert = true;
+  }
   switch (row_index)
   {
   case MENU_ROW_OTHER_ADD_TIMER:
-    menu_draw_row_icon_text(ctx, "Timer", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ADD));
+    menu_draw_row_icon_text(ctx, "Timer", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ADD), invert);
     break;
   case MENU_ROW_OTHER_SETTINGS:
-    menu_draw_row_icon_text(ctx, "Settings", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_SETTINGS));
+    menu_draw_row_icon_text(ctx, "Settings", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_SETTINGS), invert);
     break;
   case MENU_ROW_OTHER_ABOUT:
-    menu_draw_row_icon_text(ctx, "About", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ABOUT));
+    menu_draw_row_icon_text(ctx, "About", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ABOUT), invert);
     break;
   }
 }
@@ -198,7 +211,10 @@ static void menu_select_modifiers(uint16_t row_index)
   {
   case MENU_ROW_MODIFIERS_QUICKEN:
     settings()->quicken_enabled = !settings()->quicken_enabled;
-    
+    if (NULL != main_screen_active_timer()) 
+    {
+        timer_time_till_full(main_screen_active_timer());
+    }
     menu_layer_reload_data(s_menu);
     break;
   default:

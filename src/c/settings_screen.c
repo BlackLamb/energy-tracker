@@ -103,11 +103,19 @@ static int16_t menu_get_header_height_callback(MenuLayer *me, uint16_t section_i
 
 static int16_t menu_get_cell_height_callback(MenuLayer *me, MenuIndex *cell_index, void *data)
 {
+  //return PBL_IF_ROUND_ELSE(
+  //menu_layer_is_index_selected(me, cell_index) ?
+  //MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_TALL_CELL_HEIGHT,
+  //32);
   return 32;
 }
 
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data)
 {
+  bool invert = false;
+  if(menu_cell_layer_is_highlighted(cell_layer)) {
+      invert = true;
+  }
   char value[16] = "";
 
   switch (cell_index->section)
@@ -117,7 +125,7 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuI
     {
     case MENU_ROW_CHARACTER_ENERGY:
       snprintf(value, 16, "%02d", settings()->max_energy);
-      menu_draw_option(ctx, "Max Energy", value);
+      menu_draw_option(ctx, "Max Energy", value, invert);
       break;
     }
     break;
@@ -126,24 +134,24 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuI
     {
     case MENU_ROW_TIMERS_DURATION:
       timer_time_str(settings()->timers_duration, value, 16);
-      menu_draw_option(ctx, "Duration", value);
+      menu_draw_option(ctx, "Duration", value, invert);
       break;
     case MENU_ROW_TIMERS_ACCEL_ENABLE:
-      menu_draw_option(ctx, "Accelerate", settings()->accel_enabled ? "ON" : "OFF");
+      menu_draw_option(ctx, "Accelerate", settings()->accel_enabled ? "ON" : "OFF", invert);
       break;
     case MENU_ROW_TIMERS_ACCEL_TICK:
       snprintf(value, 16, "%02d", settings()->accel_tick);
-      menu_draw_option(ctx, "Accel Tick", value);
+      menu_draw_option(ctx, "Accel Tick", value, invert);
       break;
     case MENU_ROW_TIMERS_VIBRATION_TICK:
       strcpy(value, timer_vibe_str(settings()->timers_tick_vibration, true));
       uppercase(value);
-      menu_draw_option(ctx, "Tick Vibe", value);
+      menu_draw_option(ctx, "Tick Vibe", value, invert);
       break;
     case MENU_ROW_TIMERS_VIBRATION_FULL:
       strcpy(value, timer_vibe_str(settings()->timers_finish_vibration, true));
       uppercase(value);
-      menu_draw_option(ctx, "Full Vibe", value);
+      menu_draw_option(ctx, "Full Vibe", value, invert);
       break;
     }
     break;

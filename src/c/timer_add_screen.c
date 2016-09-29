@@ -24,7 +24,7 @@ static int16_t menu_get_header_height_callback(MenuLayer *me, uint16_t section_i
 static int16_t menu_get_cell_height_callback(MenuLayer *me, MenuIndex *cell_index, void *data);
 static void menu_draw_header_callback(GContext *ctx, const Layer *cell_layer, uint16_t section_index, void *data);
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data);
-static void menu_draw_row_main(GContext *ctx, uint16_t row);
+static void menu_draw_row_main(GContext *ctx, uint16_t row, bool invert);
 static void menu_select_click_callback(MenuLayer *menu_layer, MenuIndex *cell_index, void *callback_context);
 static void menu_select_main(uint16_t row);
 static void menu_select_footer(void);
@@ -129,13 +129,21 @@ static void menu_draw_header_callback(GContext *ctx, const Layer *cell_layer, ui
 
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data)
 {
+  bool invert = false;
+  if(menu_cell_layer_is_highlighted(cell_layer)) {
+      invert = true;
+  }
   switch (cell_index->section)
   {
   case MENU_SECTION_MAIN:
-    menu_draw_row_main(ctx, cell_index->row);
+    menu_draw_row_main(ctx, cell_index->row, invert);
     break;
   case MENU_SECTION_FOOTER:
     graphics_context_set_text_color(ctx, GColorBlack);
+    if (invert) 
+    {
+        graphics_context_set_text_color(ctx, GColorWhite);
+    }
     graphics_draw_text(ctx, s_mode_edit ? "Save Timer" : "Add Timer",
                        fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD), GRect(4, 5, 136, 28),
                        GTextOverflowModeTrailingEllipsis, GTextAlignmentCenter, NULL);
@@ -143,28 +151,28 @@ static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuI
   }
 }
 
-static void menu_draw_row_main(GContext *ctx, uint16_t row)
+static void menu_draw_row_main(GContext *ctx, uint16_t row, bool invert)
 {
   char tmp[16];
   switch (row)
   {
   case MENU_ROW_DURATION:
     timer_time_str(s_timer->length, tmp, sizeof(tmp));
-    menu_draw_option(ctx, "Rate", tmp);
+    menu_draw_option(ctx, "Rate", tmp, invert);
     break;
   case MENU_ROW_BASE_TICK:
     snprintf(tmp, 16, "%02d", s_timer->base_amount);
-    menu_draw_option(ctx, "Energy", tmp);
+    menu_draw_option(ctx, "Energy", tmp, invert);
     break;
   case MENU_ROW_ACCELERATION:
-    menu_draw_option(ctx, "Acceleration", (s_timer->accel) ? "ON" : "OFF");
+    menu_draw_option(ctx, "Acceleration", (s_timer->accel) ? "ON" : "OFF", invert);
     break;
   case MENU_ROW_ACCELERATION_TICK:
   {
     if (s_timer->accel)
     {
       snprintf(tmp, 16, "%02d", s_timer->accel_tick);
-      menu_draw_option(ctx, "Accelerate On", tmp);
+      menu_draw_option(ctx, "Accelerate On", tmp, invert);
     }
     break;
   }

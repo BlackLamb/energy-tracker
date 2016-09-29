@@ -22,6 +22,10 @@ void timer_time_str(uint32_t timer_time, char *str, int str_len)
 
 void timer_start(Timer *timer)
 {
+    if (main_screen_active_timer()) 
+    {
+        timer_reset(main_screen_active_timer(), false);
+    }
     timer->current_time = timer->length;
     timer->status = TIMER_STATUS_RUNNING;
     timer_schedule_tick(timer);

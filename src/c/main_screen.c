@@ -41,6 +41,7 @@ static void layer_action_bar_click_config_provider(void *context);
 static void action_bar_layer_down_handler(ClickRecognizerRef recognizer, void *context);
 static void action_bar_layer_up_handler(ClickRecognizerRef recognizer, void *context);
 static void action_bar_layer_select_handler(ClickRecognizerRef recognizer, void *context);
+static void action_bar_layer_long_select_handler(ClickRecognizerRef recognizer, void *context);
 static void update_timer_status(void);
 
 void main_screen_init(void)
@@ -117,6 +118,11 @@ void main_screen_hide_status_area(bool finished)
     text_layer_set_text(s_timer_full_layer, "");
   }
   animation_schedule(anim);
+}
+
+Timer * main_screen_active_timer(void) 
+{
+    return s_current_timer;
 }
 
 static void initialise_ui(void)
@@ -251,6 +257,7 @@ static void layer_action_bar_click_config_provider(void *context)
   window_single_click_subscribe(BUTTON_ID_UP, action_bar_layer_up_handler);
   window_single_click_subscribe(BUTTON_ID_DOWN, action_bar_layer_down_handler);
   window_single_click_subscribe(BUTTON_ID_SELECT, action_bar_layer_select_handler);
+  window_long_click_subscribe(BUTTON_ID_SELECT, 0, action_bar_layer_long_select_handler, NULL);
 }
 
 static void action_bar_layer_down_handler(ClickRecognizerRef recognizer, void *context)
@@ -279,8 +286,25 @@ static void action_bar_layer_up_handler(ClickRecognizerRef recognizer, void *con
 
 static void action_bar_layer_select_handler(ClickRecognizerRef recognizer, void *context)
 {
-  //TODO: open the menu screen
   menu_screen_show();
+}
+
+static void action_bar_layer_long_select_handler(ClickRecognizerRef recognizer, void *context) 
+{
+    if (s_current_timer) 
+    {
+        switch (s_current_timer->status) 
+        {
+          case TIMER_STATUS_RUNNING:
+            timer_pause(s_current_timer);
+            break;
+          case TIMER_STATUS_PAUSED:
+            timer_resume(s_current_timer);
+            break;
+          default:
+            break;
+        }
+    }
 }
 
 static void update_timer_status(void)
