@@ -22,6 +22,7 @@ void timer_time_str(uint32_t timer_time, char *str, int str_len)
 
 void timer_start(Timer *timer)
 {
+    if (settings()->current_energy >= settings()->max_energy) { return; }
     if (main_screen_active_timer()) 
     {
         timer_reset(main_screen_active_timer(), false);
@@ -32,7 +33,10 @@ void timer_start(Timer *timer)
     timer_schedule_wakeup(timer, 0);
     timer_refresh_info(timer);
     timers_mark_updated();
-    main_screen_show_status_area(timer);
+    if (!main_screen_active_timer())
+    {
+      main_screen_show_status_area(timer);
+    }
 }
 
 void timer_pause(Timer *timer)
@@ -49,6 +53,10 @@ void timer_resume(Timer *timer)
     timer_schedule_tick(timer);
     timer_schedule_wakeup(timer, 0);
     timers_mark_updated();
+    if (!main_screen_active_timer())
+    {
+      main_screen_show_status_area(timer);
+    }
 }
 
 void timer_reset(Timer *timer, bool ret)
@@ -60,7 +68,6 @@ void timer_reset(Timer *timer, bool ret)
     timer->status = TIMER_STATUS_STOPPED;
     timer_update_energy_per_tick(timer);
     timers_mark_updated();
-    settings()->quicken_enabled = false;
     if (ret)
     {
         main_screen_hide_status_area(false);
@@ -72,19 +79,20 @@ void timer_restore(Timer *timer, uint16_t seconds_elapsed)
     timer->timer = NULL;
     if (timer->status == TIMER_STATUS_RUNNING)
     {
-	if (seconds_elapsed >= timer->current_time)
-	{
-	    timer->current_time = 0;
-	    timer->status = TIMER_STATUS_DONE;
-	}
-	else
-	{
-	    timer->current_time -= seconds_elapsed;
-	}
+	    if (seconds_elapsed >= timer->current_time)
+	    {
+	      timer->current_time = 0;
+	      timer->status = TIMER_STATUS_DONE;
+	    }
+	    else
+	    {
+	      timer->current_time -= seconds_elapsed;
+        timer->full_time -= seconds_elapsed;
+	    }
     }
     if (timer->status == TIMER_STATUS_RUNNING)
     {
-	timer_resume(timer);
+	    timer_resume(timer);
     }
 }
 
@@ -120,8 +128,6 @@ Timer *timer_create_timer(void)
     timer->wakeup_id = -1;
     timer->timer = NULL;
     timer->status = TIMER_STATUS_STOPPED;
-    timer->accel = settings()->accel_enabled;
-    timer->accel_tick = settings()->accel_tick;
     timer->base_amount = 1;
     timer->current_amount = 1;
     timer->current_tick = 1;
@@ -133,9 +139,9 @@ Timer *timer_create_timer(void)
 void timer_update_energy_per_tick(Timer *timer)
 {
     uint8_t update = timer->base_amount;
-    if (timer->accel) 
+    if (settings()->accel_enabled) 
     {
-        update += timer->current_tick / timer->accel_tick;
+        update += timer->current_tick / settings()->accel_tick;
     }
     if (settings()->quicken_enabled)
     {
@@ -349,7 +355,6 @@ static void timer_completed_action(Timer *timer)
     else
     {
         timer_reset(timer, true);
-        //main_screen_hide_status_area(true);
     }
     //timers_highlight(timer);
 }

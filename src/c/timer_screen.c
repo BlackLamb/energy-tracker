@@ -5,6 +5,7 @@
 #include "timer_screen.h"
 #include "timer_add_screen.h"
 #include "timer.h"
+#include "settings.h"
 #include "common.h"
 #include "icons.h"
 #include "timers.h"
@@ -161,6 +162,7 @@ static void menu_select(struct MenuLayer *menu, MenuIndex *cell_index, void *cal
   }
   case MENU_ROW_RESET:
     timer_reset(s_timer, false);
+    settings()->quicken_enabled = false;
     break;
   case MENU_ROW_DELETE:
     timers_remove(timers_index_of(s_timer->id));

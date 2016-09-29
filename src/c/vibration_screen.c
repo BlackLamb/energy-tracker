@@ -84,13 +84,17 @@ static int16_t menu_get_cell_height_callback(MenuLayer *me, MenuIndex *cell_inde
 
 static void menu_draw_row_callback(GContext *ctx, const Layer *cell_layer, MenuIndex *cell_index, void *data)
 {
+  bool invert = false;
+  if(menu_cell_layer_is_highlighted(cell_layer)) {
+      invert = true;
+  }
   char label[24];
   strcpy(label, timer_vibe_str(cell_index->row, false));
-  graphics_context_set_text_color(ctx, GColorBlack);
+  graphics_context_set_text_color(ctx, invert ? GColorWhite : GColorBlack);
   graphics_draw_text(ctx, label, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD), GRect(4, 1, 112, 28), GTextOverflowModeTrailingEllipsis, GTextAlignmentLeft, NULL);
   if (current_vibration == cell_index->row)
   {
-    graphics_draw_bitmap_in_rect(ctx, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_DONE), GRect(120, 10, 16, 16));
+    graphics_draw_bitmap_in_rect(ctx, bitmaps_get_sub_bitmap(invert ? RESOURCE_ID_ICON_16_INVERTED : RESOURCE_ID_ICONS_16, ICON_RECT_DONE), GRect(120, 10, 16, 16));
   }
 }
 

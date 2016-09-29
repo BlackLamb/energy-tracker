@@ -26,8 +26,6 @@ typedef struct Timer
     TimerStatus status;
     AppTimer *timer;
     WakeupId wakeup_id;
-    bool accel;
-    uint8_t accel_tick;
     uint8_t current_tick;
     uint8_t base_amount;
     uint8_t current_amount;

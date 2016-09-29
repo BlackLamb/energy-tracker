@@ -103,10 +103,6 @@ static int16_t menu_get_header_height_callback(MenuLayer *me, uint16_t section_i
 
 static int16_t menu_get_cell_height_callback(MenuLayer *me, MenuIndex *cell_index, void *data)
 {
-  //return PBL_IF_ROUND_ELSE(
-  //menu_layer_is_index_selected(me, cell_index) ?
-  //MENU_CELL_ROUND_FOCUSED_SHORT_CELL_HEIGHT : MENU_CELL_ROUND_UNFOCUSED_TALL_CELL_HEIGHT,
-  //32);
   return 32;
 }
 
@@ -191,6 +187,7 @@ static void menu_select_click_callback(MenuLayer *menu_layer, MenuIndex *cell_in
       break;
     case MENU_ROW_TIMERS_ACCEL_ENABLE:
       settings()->accel_enabled = !settings()->accel_enabled;
+      menu_layer_reload_data(layer_menu);
       break;
     case MENU_ROW_TIMERS_ACCEL_TICK:
       amount_screen_show(settings()->accel_tick, "Tick", accel_tick_callback);

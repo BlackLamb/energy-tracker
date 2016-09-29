@@ -15,6 +15,12 @@
         "resources": {
             "media": [
                 {
+                    "file": "images/iconsInv.png",
+                    "name": "ICON_16_INVERTED",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                },
+                {
                     "file": "images/status.png",
                     "name": "IMAGE_BOTTOM_STATUS",
                     "targetPlatforms": null,

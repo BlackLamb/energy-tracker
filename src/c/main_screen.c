@@ -267,6 +267,7 @@ static void action_bar_layer_down_handler(ClickRecognizerRef recognizer, void *c
       if (s_current_timer->status != TIMER_STATUS_STOPPED) 
       {
           timer_reset(s_current_timer, true);
+          settings()->quicken_enabled = false;
       }
   }
   update_energy(-1);
@@ -279,6 +280,7 @@ static void action_bar_layer_up_handler(ClickRecognizerRef recognizer, void *con
       if (s_current_timer->status != TIMER_STATUS_STOPPED) 
       {
           timer_reset(s_current_timer, true);
+          settings()->quicken_enabled = false;
       }
   }
   update_energy(1);

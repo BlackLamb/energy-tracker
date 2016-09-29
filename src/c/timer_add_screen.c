@@ -13,8 +13,7 @@
 
 #define MENU_ROW_DURATION 0
 #define MENU_ROW_BASE_TICK 1
-#define MENU_ROW_ACCELERATION 2
-#define MENU_ROW_ACCELERATION_TICK 3
+
 
 static void window_load(Window *window);
 static void window_unload(Window *window);
@@ -29,7 +28,6 @@ static void menu_select_click_callback(MenuLayer *menu_layer, MenuIndex *cell_in
 static void menu_select_main(uint16_t row);
 static void menu_select_footer(void);
 static void amount_callback(uint8_t amount);
-static void accel_amount_callback(uint8_t amount);
 static void duration_callback(uint32_t duration);
 
 static Window *s_window;
@@ -95,7 +93,7 @@ static uint16_t menu_get_num_rows_callback(MenuLayer *me, uint16_t section_index
   switch (section_index)
   {
   case MENU_SECTION_MAIN:
-    return 4;
+    return 2;
   case MENU_SECTION_FOOTER:
     return 1;
   }
@@ -164,18 +162,6 @@ static void menu_draw_row_main(GContext *ctx, uint16_t row, bool invert)
     snprintf(tmp, 16, "%02d", s_timer->base_amount);
     menu_draw_option(ctx, "Energy", tmp, invert);
     break;
-  case MENU_ROW_ACCELERATION:
-    menu_draw_option(ctx, "Acceleration", (s_timer->accel) ? "ON" : "OFF", invert);
-    break;
-  case MENU_ROW_ACCELERATION_TICK:
-  {
-    if (s_timer->accel)
-    {
-      snprintf(tmp, 16, "%02d", s_timer->accel_tick);
-      menu_draw_option(ctx, "Accelerate On", tmp, invert);
-    }
-    break;
-  }
   }
 }
 
@@ -202,13 +188,6 @@ static void menu_select_main(uint16_t row)
   case MENU_ROW_BASE_TICK:
     amount_screen_show(s_timer->base_amount, "ENERGY", amount_callback);
     break;
-  case MENU_ROW_ACCELERATION:
-    s_timer->accel = !(s_timer->accel);
-    menu_layer_reload_data(s_menu);
-    break;
-  case MENU_ROW_ACCELERATION_TICK:
-    amount_screen_show(s_timer->accel_tick, "ACCEL #", accel_amount_callback);
-    break;
   }
 }
 
@@ -224,9 +203,7 @@ static void menu_select_footer(void)
   {
     Timer *timer = timers_find(s_timer->id);
     timer->length = s_timer->length;
-    timer->accel = s_timer->accel;
     timer->base_amount = s_timer->base_amount;
-    timer->accel_tick = s_timer->accel_tick;
     timer_reset(timer,false);
     window_stack_pop(true);
     timers_mark_updated();
@@ -245,11 +222,6 @@ static void menu_select_footer(void)
 static void amount_callback(uint8_t amount)
 {
   s_timer->base_amount = amount;
-}
-
-static void accel_amount_callback(uint8_t amount)
-{
-  s_timer->accel_tick = amount;
 }
 
 static void duration_callback(uint32_t duration)

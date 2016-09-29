@@ -22,9 +22,9 @@ static void init(void)
   timers_init();
   bitmaps_init();
   settings_load();
-  timers_restore();
   main_screen_init();
   main_screen_show();
+  timers_restore();
 }
 
 static void deinit(void)

@@ -178,13 +178,13 @@ static void menu_draw_row_other(GContext *ctx, const Layer *cell_layer, uint16_t
   switch (row_index)
   {
   case MENU_ROW_OTHER_ADD_TIMER:
-    menu_draw_row_icon_text(ctx, "Timer", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ADD), invert);
+    menu_draw_row_icon_text(ctx, "Timer", bitmaps_get_sub_bitmap(invert ? RESOURCE_ID_ICON_16_INVERTED : RESOURCE_ID_ICONS_16, ICON_RECT_ADD), invert);
     break;
   case MENU_ROW_OTHER_SETTINGS:
-    menu_draw_row_icon_text(ctx, "Settings", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_SETTINGS), invert);
+    menu_draw_row_icon_text(ctx, "Settings", bitmaps_get_sub_bitmap(invert ? RESOURCE_ID_ICON_16_INVERTED : RESOURCE_ID_ICONS_16, ICON_RECT_SETTINGS), invert);
     break;
   case MENU_ROW_OTHER_ABOUT:
-    menu_draw_row_icon_text(ctx, "About", bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ABOUT), invert);
+    menu_draw_row_icon_text(ctx, "About", bitmaps_get_sub_bitmap(invert ? RESOURCE_ID_ICON_16_INVERTED : RESOURCE_ID_ICONS_16, ICON_RECT_ABOUT), invert);
     break;
   }
 }

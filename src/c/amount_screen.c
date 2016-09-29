@@ -49,9 +49,9 @@ static void window_load(Window *window)
     s_action_bar = action_bar_layer_create();
     action_bar_layer_add_to_window(s_action_bar, s_window);
     action_bar_layer_set_click_config_provider(s_action_bar, layer_action_bar_click_config_provider);
-    action_bar_layer_set_icon(s_action_bar, BUTTON_ID_UP, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ACTION_INC));
-    action_bar_layer_set_icon(s_action_bar, BUTTON_ID_DOWN, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ACTION_DEC));
-    action_bar_layer_set_icon(s_action_bar, BUTTON_ID_SELECT, bitmaps_get_sub_bitmap(RESOURCE_ID_ICONS_16, ICON_RECT_ACTION_TICK));
+    action_bar_layer_set_icon(s_action_bar, BUTTON_ID_UP, bitmaps_get_sub_bitmap(RESOURCE_ID_ICON_16_INVERTED, ICON_RECT_ACTION_INC));
+    action_bar_layer_set_icon(s_action_bar, BUTTON_ID_DOWN, bitmaps_get_sub_bitmap(RESOURCE_ID_ICON_16_INVERTED, ICON_RECT_ACTION_DEC));
+    action_bar_layer_set_icon(s_action_bar, BUTTON_ID_SELECT, bitmaps_get_sub_bitmap(RESOURCE_ID_ICON_16_INVERTED, ICON_RECT_ACTION_TICK));
 
     s_font_duration = fonts_get_system_font(FONT_KEY_BITHAM_42_MEDIUM_NUMBERS);
 }
