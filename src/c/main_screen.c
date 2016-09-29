@@ -27,12 +27,14 @@ static TextLayer *s_timer_full_layer;
 static char s_str_current_eng[] = "99";
 static char s_str_max_eng[] = "/99";
 static Timer *s_current_timer = NULL;
+static char s_str_timer_rate[] = "00 / 00:00";
+static char s_str_timer_next[] = "Next: 04:30";
+static char s_str_timer_full[] = "Full: 29:30";
 
 static void initialise_ui(void);
 static void destroy_ui(void);
 static void handle_window_unload(Window *window);
 static void anim_stopped_handler(Animation *animation, bool finished, void *context);
-static void tick_handler(struct tm *tick_time, TimeUnits units_changed);
 static void timers_update_handler(void);
 static void update_energy(int8_t amount);
 static void layer_action_bar_click_config_provider(void *context);
@@ -222,10 +224,6 @@ static void anim_stopped_handler(Animation *animation, bool finished, void *cont
   layer_hide((Layer *)s_bitmap_status_area_layer);
 }
 
-static void tick_handler(struct tm *tick_time, TimeUnits units_changed)
-{
-}
-
 static void timers_update_handler (void)
 {
   update_timer_status();
@@ -257,11 +255,25 @@ static void layer_action_bar_click_config_provider(void *context)
 
 static void action_bar_layer_down_handler(ClickRecognizerRef recognizer, void *context)
 {
+  if (s_current_timer)
+  {
+      if (s_current_timer->status != TIMER_STATUS_STOPPED) 
+      {
+          timer_reset(s_current_timer, true);
+      }
+  }
   update_energy(-1);
 }
 
 static void action_bar_layer_up_handler(ClickRecognizerRef recognizer, void *context)
 {
+  if (s_current_timer)
+  {
+      if (s_current_timer->status != TIMER_STATUS_STOPPED) 
+      {
+          timer_reset(s_current_timer, true);
+      }
+  }
   update_energy(1);
 }
 
@@ -278,28 +290,24 @@ static void update_timer_status(void)
     //main_screen_hide_status_area(false);
     return;
   }
-  char timer_rate[] = "00 / 00:00";
-  char timer_next[] = "Next: 04:30";
-  char timer_full[] = "Full: 29:30";
+  snprintf(s_str_current_eng, sizeof(s_str_current_eng), "%i", settings()->current_energy);
   int minutes = s_current_timer->length / 60;
   int seconds = s_current_timer->length % 60;
   uint8_t eng_amount = s_current_timer->current_amount;
-  snprintf(timer_rate, sizeof(timer_rate), "%i / %02d:%02d", eng_amount, minutes, seconds);
+  snprintf(s_str_timer_rate, sizeof(s_str_timer_rate), "%i / %02d:%02d", eng_amount, minutes, seconds);
 
   minutes = s_current_timer->current_time / 60;
   seconds = s_current_timer->current_time % 60;
-  snprintf(timer_next, sizeof(timer_next), "Next: %02d:%02d", minutes, seconds);
+  snprintf(s_str_timer_next, sizeof(s_str_timer_next), "Next: %02d:%02d", minutes, seconds);
 
   //TODO: Get full time estimate
   minutes = s_current_timer->full_time / 60;
   seconds = s_current_timer->full_time % 60;
-  snprintf(timer_full, sizeof(timer_full), "Full: %d:%02d", minutes, seconds);
+  snprintf(s_str_timer_full, sizeof(s_str_timer_full), "Full: %d:%02d", minutes, seconds);
 
-  //text_layer_set_text_color(s_timer_rate_layer, GColorBlack);
-  //text_layer_set_text(s_timer_rate_layer, timer_rate);
-  //text_layer_set_text(s_timer_next_layer, timer_next);
-  //text_layer_set_text(s_timer_full_layer, timer_full);
-  DEBUG(timer_rate);
-  DEBUG(timer_next);
-  DEBUG(timer_full);
+  
+  text_layer_set_text(s_current_energy_layer, s_str_current_eng);
+  text_layer_set_text(s_timer_rate_layer, s_str_timer_rate);
+  text_layer_set_text(s_timer_next_layer, s_str_timer_next);
+  text_layer_set_text(s_timer_full_layer, s_str_timer_full);
 }

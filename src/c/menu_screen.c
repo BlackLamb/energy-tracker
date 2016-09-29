@@ -156,6 +156,7 @@ static void menu_draw_row_timers(GContext *ctx, const Layer *cell_layer, uint16_
   {
     return;
   }
+  timer_update_energy_per_tick(timer);
   timer_draw_row(timer, true, false, ctx);
 }
 
@@ -197,6 +198,7 @@ static void menu_select_modifiers(uint16_t row_index)
   {
   case MENU_ROW_MODIFIERS_QUICKEN:
     settings()->quicken_enabled = !settings()->quicken_enabled;
+    
     menu_layer_reload_data(s_menu);
     break;
   default:

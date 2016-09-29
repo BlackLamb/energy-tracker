@@ -37,7 +37,7 @@ void timer_time_str(uint32_t timer_time, char *str, int str_len);
 void timer_start(Timer *timer);
 void timer_pause(Timer *timer);
 void timer_resume(Timer *timer);
-void timer_reset(Timer *timer, bool return);
+void timer_reset(Timer *timer, bool ret);
 void timer_restore(Timer *timer, uint16_t seconds_elapsed);
 Timer *timer_clone(Timer *timer);
 char *timer_vibe_str(TimerVibration vibe, bool shortStr);

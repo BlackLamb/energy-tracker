@@ -47,7 +47,7 @@ void timer_resume(Timer *timer)
     timers_mark_updated();
 }
 
-void timer_reset(Timer *timer, bool return)
+void timer_reset(Timer *timer, bool ret)
 {
     timer_pause(timer);
     timer->current_time = timer->length;
@@ -56,7 +56,8 @@ void timer_reset(Timer *timer, bool return)
     timer->status = TIMER_STATUS_STOPPED;
     timer_update_energy_per_tick(timer);
     timers_mark_updated();
-    if (return)
+    settings()->quicken_enabled = false;
+    if (ret)
     {
         main_screen_hide_status_area(false);
     }
@@ -148,7 +149,6 @@ void timer_time_till_full(Timer *timer)
     uint8_t energy = settings()->current_energy + temp_timer->current_amount;
     if (energy >= settings()->max_energy) 
     {
-        //free(temp_timer);
         timer->full_time = eta_time;
     }
     
@@ -162,8 +162,7 @@ void timer_time_till_full(Timer *timer)
     }
     
     eta_time += (additional_ticks * temp_timer->length);
-    
-    //free(temp_timer);
+
     timer->full_time = eta_time;
 }
 
