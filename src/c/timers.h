@@ -26,3 +26,4 @@ void timers_register_highlight_handler(TimerHighlightHandler handler);
 
 void timers_save(void);
 void timers_restore(void);
+void timers_destroy(void);

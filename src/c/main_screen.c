@@ -126,6 +126,12 @@ Timer * main_screen_active_timer(void)
     return s_current_timer;
 }
 
+void main_screen_destroy(void) 
+{
+  menu_screen_destroy();
+  s_current_timer = NULL;
+}
+
 static void initialise_ui(void)
 {
   s_window = window_create();

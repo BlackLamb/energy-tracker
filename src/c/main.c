@@ -32,4 +32,6 @@ static void deinit(void)
   timers_save();
   settings_save();
   bitmaps_cleanup();
+  main_screen_destroy();
+  timers_destroy();
 }

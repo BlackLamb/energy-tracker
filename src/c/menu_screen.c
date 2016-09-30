@@ -76,13 +76,13 @@ void menu_screen_destroy(void)
 {
   window_destroy_safe(s_window);
   //Destroy the sub screens
-  //timer_add_screen_destroy();
-  //duration_screen_init();
-  //amount_screen_init();
-  //about_screen_init();
-  //settings_screen_init();
-  //vibration_screen_init();
-  //timer_screen_init();
+  timer_add_screen_destroy();
+  duration_screen_destroy();
+  amount_screen_destroy();
+  about_screen_destroy();
+  settings_screen_destroy();
+  vibration_screen_destroy();
+  timer_screen_destroy();
 }
 
 static void window_load(Window *window)

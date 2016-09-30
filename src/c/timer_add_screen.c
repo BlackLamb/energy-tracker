@@ -62,6 +62,16 @@ void timer_add_screen_show_edit(Timer *tmr)
   s_timer = timer_clone(tmr);
 }
 
+void timer_add_screen_destroy(void) 
+{
+  window_destroy_safe(s_window);
+  if (NULL != s_timer)
+  {
+    free(s_timer);
+    s_timer = NULL;
+  }
+}
+
 static void window_load(Window *window)
 {
   s_menu = menu_layer_create_fullscreen(s_window);

@@ -58,6 +58,11 @@ void timer_screen_show(void)
   window_stack_push(s_window, false);
 }
 
+void timer_screen_destroy(void) 
+{
+  window_destroy_safe(s_window);
+}
+
 static void window_load(Window *window)
 {
   s_layer_header = layer_create(GRect(0, 0, PEBBLE_WIDTH, 36));

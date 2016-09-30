@@ -57,6 +57,11 @@ void settings_screen_show(void)
   window_stack_push(window, true);
 }
 
+void settings_screen_destroy(void) 
+{
+  window_destroy_safe(window);
+}
+
 static void window_load(Window *window)
 {
   layer_menu = menu_layer_create_fullscreen(window);

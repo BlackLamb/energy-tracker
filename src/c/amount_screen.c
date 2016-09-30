@@ -40,6 +40,11 @@ void amount_screen_show(uint8_t amount, char *display_str, AmountCallback callba
     layer_mark_dirty(s_layer);
 }
 
+void amount_screen_destroy(void) 
+{
+  window_destroy_safe(s_window);
+}
+
 static void window_load(Window *window)
 {
     s_layer = layer_create_fullscreen(s_window);

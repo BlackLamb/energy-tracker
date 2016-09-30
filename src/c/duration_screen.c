@@ -51,6 +51,11 @@ void duration_screen_show(uint16_t duration, DurationCallback callback)
     layer_mark_dirty(s_layer);
 }
 
+void duration_screen_destroy(void) 
+{
+  window_destroy_safe(s_window);
+}
+
 static void window_load(Window *window)
 {
     s_layer = layer_create_fullscreen(s_window);

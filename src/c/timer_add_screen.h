@@ -5,3 +5,4 @@
 void timer_add_screen_init(void);
 void timer_add_screen_show_new(void);
 void timer_add_screen_show_edit(Timer *timer);
+void timer_add_screen_destroy(void);
