@@ -257,7 +257,7 @@ static void menu_select_timers(uint16_t row_index)
     timer_resume(timer);
     break;
   case TIMER_STATUS_DONE:
-    timer_reset(timer, false);
+    timer_reset(timer, false, false);
     break;
   }
 }

@@ -214,14 +214,14 @@ static void menu_select_footer(void)
     Timer *timer = timers_find(s_timer->id);
     timer->length = s_timer->length;
     timer->base_amount = s_timer->base_amount;
-    timer_reset(timer,false);
+    timer_reset(timer,false, false);
     window_stack_pop(true);
     timers_mark_updated();
   }
   else
   {
     Timer *timer = timer_clone(s_timer);
-    timer_reset(timer, false);
+    timer_reset(timer, false, false);
     timers_add(timer);
     window_stack_pop(true);
     timers_mark_updated();

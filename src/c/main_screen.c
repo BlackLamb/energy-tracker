@@ -59,6 +59,14 @@ void main_screen_show(void)
   window_stack_push(s_window, true);
 }
 
+void main_screen_update_energy(void) 
+{
+  snprintf(s_str_max_eng, sizeof(s_str_max_eng), "/%i", settings()->max_energy);
+  snprintf(s_str_current_eng, sizeof(s_str_current_eng), "%i", settings()->current_energy);
+  text_layer_set_text(s_current_energy_layer, s_str_current_eng);
+  text_layer_set_text(s_total_energy_layer, s_str_max_eng);
+}
+
 void main_screen_show_status_area(Timer *timer)
 {
   Window *current_window = window_stack_get_top_window();
@@ -254,10 +262,7 @@ static void update_energy(int8_t amount)
   {
     settings()->current_energy = 0;
   }
-  snprintf(s_str_max_eng, sizeof(s_str_max_eng), "/%i", settings()->max_energy);
-  snprintf(s_str_current_eng, sizeof(s_str_current_eng), "%i", settings()->current_energy);
-  text_layer_set_text(s_current_energy_layer, s_str_current_eng);
-  text_layer_set_text(s_total_energy_layer, s_str_max_eng);
+  main_screen_update_energy();
 }
 
 static void layer_action_bar_click_config_provider(void *context)
@@ -274,7 +279,7 @@ static void action_bar_layer_down_handler(ClickRecognizerRef recognizer, void *c
   {
       if (s_current_timer->status != TIMER_STATUS_STOPPED) 
       {
-          timer_reset(s_current_timer, true);
+          timer_reset(s_current_timer, true, false);
           settings()->quicken_enabled = false;
       }
   }
@@ -287,7 +292,7 @@ static void action_bar_layer_up_handler(ClickRecognizerRef recognizer, void *con
   {
       if (s_current_timer->status != TIMER_STATUS_STOPPED) 
       {
-          timer_reset(s_current_timer, true);
+          timer_reset(s_current_timer, true, false);
           settings()->quicken_enabled = false;
       }
   }
