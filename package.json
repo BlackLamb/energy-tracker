@@ -15,6 +15,13 @@
         "resources": {
             "media": [
                 {
+                    "characterRegex": "[0-9]",
+                    "file": "fonts/AudiType-Normal_03.ttf",
+                    "name": "FONT_AUDI_70",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
                     "file": "images/AppIcon.png",
                     "menuIcon": true,
                     "name": "APP_ICON",
