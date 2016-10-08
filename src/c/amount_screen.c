@@ -40,6 +40,11 @@ void amount_screen_show(uint8_t amount, char *display_str, AmountCallback callba
     layer_mark_dirty(s_layer);
 }
 
+void amount_screen_destroy(void) 
+{
+  window_destroy_safe(s_window);
+}
+
 static void window_load(Window *window)
 {
     s_layer = layer_create_fullscreen(s_window);
@@ -53,7 +58,7 @@ static void window_load(Window *window)
     action_bar_layer_set_icon(s_action_bar, BUTTON_ID_DOWN, bitmaps_get_sub_bitmap(RESOURCE_ID_ICON_16_INVERTED, ICON_RECT_ACTION_DEC));
     action_bar_layer_set_icon(s_action_bar, BUTTON_ID_SELECT, bitmaps_get_sub_bitmap(RESOURCE_ID_ICON_16_INVERTED, ICON_RECT_ACTION_TICK));
 
-    s_font_duration = fonts_get_system_font(FONT_KEY_BITHAM_42_MEDIUM_NUMBERS);
+    s_font_duration = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_AUDI_70));
 }
 
 static void window_unload(Window *window)
@@ -61,7 +66,7 @@ static void window_unload(Window *window)
     DEBUG("Amount Window Unload");
     action_bar_layer_destroy_safe(s_action_bar);
     layer_destroy_safe(s_layer);
-    //fonts_unload_custom_font(s_font_duration);
+    fonts_unload_custom_font(s_font_duration);
 }
 
 static void layer_update(Layer *me, GContext *ctx)

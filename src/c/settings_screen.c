@@ -6,6 +6,7 @@
 #include "duration_screen.h"
 #include "amount_screen.h"
 #include "vibration_screen.h"
+#include "main_screen.h"
 
 #include "settings.h"
 #include "timers.h"
@@ -55,6 +56,11 @@ void settings_screen_init(void)
 void settings_screen_show(void)
 {
   window_stack_push(window, true);
+}
+
+void settings_screen_destroy(void) 
+{
+  window_destroy_safe(window);
 }
 
 static void window_load(Window *window)
@@ -228,4 +234,5 @@ static void energy_amount_callback(uint8_t amount)
 {
   settings()->max_energy = amount;
   settings()->current_energy = amount;
+  main_screen_update_energy();
 }

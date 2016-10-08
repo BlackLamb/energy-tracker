@@ -41,6 +41,11 @@ void vibration_screen_show(VibrationCallback callback, TimerVibration vibration)
   current_callback = callback;
 }
 
+void vibration_screen_destroy(void)
+{
+  window_destroy_safe(window);
+}
+
 static void window_load(Window *window)
 {
   layer_menu = menu_layer_create_fullscreen(window);

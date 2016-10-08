@@ -25,7 +25,7 @@ void timer_start(Timer *timer)
     if (settings()->current_energy >= settings()->max_energy) { return; }
     if (main_screen_active_timer()) 
     {
-        timer_reset(main_screen_active_timer(), false);
+        timer_reset(main_screen_active_timer(), false, true);
     }
     timer->current_time = timer->length;
     timer->status = TIMER_STATUS_RUNNING;
@@ -59,12 +59,15 @@ void timer_resume(Timer *timer)
     }
 }
 
-void timer_reset(Timer *timer, bool ret)
+void timer_reset(Timer *timer, bool ret, bool repeat)
 {
     timer_pause(timer);
     timer->current_time = timer->length;
-    timer->current_amount = timer->base_amount;
-    timer->current_tick = 1;
+    if (!repeat) 
+    {
+      timer->current_amount = timer->base_amount;
+      timer->current_tick = 1;
+    }
     timer->status = TIMER_STATUS_STOPPED;
     timer_update_energy_per_tick(timer);
     timers_mark_updated();
@@ -305,7 +308,6 @@ static void timer_completed_action(Timer *timer)
     TimerVibration current_vibration = settings()->timers_tick_vibration;
     bool finished = false;
     
-    //TODO: Add energy refill logic
     settings()->current_energy += timer->current_amount;
     
     if (settings()->current_energy >= settings()->max_energy) 
@@ -354,7 +356,6 @@ static void timer_completed_action(Timer *timer)
     }
     else
     {
-        timer_reset(timer, true);
+        timer_reset(timer, true, false);
     }
-    //timers_highlight(timer);
 }

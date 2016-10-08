@@ -24,6 +24,11 @@ void about_screen_show(void)
     window_stack_push(s_window, true);
 }
 
+void about_screen_destroy(void) 
+{
+  window_destroy_safe(s_window);
+}
+
 static void window_load(Window *window)
 {
     s_layer_header = layer_create(GRect(0, 0, PEBBLE_WIDTH, PBL_IF_RECT_ELSE(24, 40)));

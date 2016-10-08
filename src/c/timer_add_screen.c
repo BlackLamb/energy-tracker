@@ -62,6 +62,16 @@ void timer_add_screen_show_edit(Timer *tmr)
   s_timer = timer_clone(tmr);
 }
 
+void timer_add_screen_destroy(void) 
+{
+  window_destroy_safe(s_window);
+  if (NULL != s_timer)
+  {
+    free(s_timer);
+    s_timer = NULL;
+  }
+}
+
 static void window_load(Window *window)
 {
   s_menu = menu_layer_create_fullscreen(s_window);
@@ -204,14 +214,14 @@ static void menu_select_footer(void)
     Timer *timer = timers_find(s_timer->id);
     timer->length = s_timer->length;
     timer->base_amount = s_timer->base_amount;
-    timer_reset(timer,false);
+    timer_reset(timer,false, false);
     window_stack_pop(true);
     timers_mark_updated();
   }
   else
   {
     Timer *timer = timer_clone(s_timer);
-    timer_reset(timer, false);
+    timer_reset(timer, false, false);
     timers_add(timer);
     window_stack_pop(true);
     timers_mark_updated();

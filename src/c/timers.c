@@ -262,3 +262,14 @@ void timers_restore(void)
         }
     }
 }
+
+void timers_destroy(void) {
+  timers_cleanup();
+  linked_list_clear(timers);
+  linked_list_clear(update_handlers);
+  linked_list_clear(highlight_handlers);
+  
+  free(timers);
+  free(update_handlers);
+  free(highlight_handlers);
+}
